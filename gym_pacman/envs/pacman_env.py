@@ -6,6 +6,13 @@ from ..ghost import *
 from ..level import *
 from ..path_finder import *
 
+# Joystick defaults - maybe add a Preferences dialog in the future?
+JS_DEVNUM = 0  # device 0 (pygame joysticks always start at 0). if JS_DEVNUM is not a valid device, will use 0
+JS_XAXIS = 0  # axis 0 for left/right (default for most joysticks)
+JS_YAXIS = 1  # axis 1 for up/down (default for most joysticks)
+JS_STARTBUTTON = 0  # button number to start the game. this is a matter of personal preference, and will vary from
+# device to device
+
 
 # game "mode" variable
 # 0 = ready to level start
@@ -50,6 +57,45 @@ class PacmanEnv(gym.Env):
         # create game and level objects and load first level
         self.thisGame = game()
         self.thisLevel = level()
+
+    """def init_pygame(self):
+        # initialise the joystick
+        if pygame.joystick.get_count() > 0:
+            if JS_DEVNUM < pygame.joystick.get_count():
+                js = pygame.joystick.Joystick(JS_DEVNUM)
+            else:
+                js = pygame.joystick.Joystick(0)
+            js.init()
+        else:
+            js = None"""
+
+    """def CheckInputs(self): if self.thisGame.mode == 1 or self.thisGame.mode == 8 or self.thisGame.mode == 9: if 
+    pygame.key.get_pressed()[pygame.K_RIGHT] or (js is not None and js.get_axis(JS_XAXIS) > 0.5): if not (
+    self.player.velX == self.player.speed and self.player.velY == 0) and not self.thisLevel.CheckIfHitWall( (
+    self.player.x + self.player.speed, self.player.y), (self.player.nearestRow, self.player.nearestCol)): 
+    self.player.velX = self.player.speed self.player.velY = 0 
+
+            elif pygame.key.get_pressed()[pygame.K_LEFT] or (js is not None and js.get_axis(JS_XAXIS) < -0.5): if not 
+            (self.player.velX == -self.player.speed and self.player.velY == 0) and not self.thisLevel.CheckIfHitWall( 
+            (self.player.x - self.player.speed, self.player.y), (self.player.nearestRow, self.player.nearestCol)): 
+            self.player.velX = -self.player.speed self.player.velY = 0 
+
+            elif pygame.key.get_pressed()[pygame.K_DOWN] or (js is not None and js.get_axis(JS_YAXIS) > 0.5): if not 
+            (self.player.velX == 0 and self.player.velY == self.player.speed) and not self.thisLevel.CheckIfHitWall( 
+            (self.player.x, self.player.y + self.player.speed), (self.player.nearestRow, self.player.nearestCol)): 
+            self.player.velX = 0 self.player.velY = self.player.speed 
+
+            elif pygame.key.get_pressed()[pygame.K_UP] or (js is not None and js.get_axis(JS_YAXIS) < -0.5): if not (
+            self.player.velX == 0 and self.player.velY == -self.player.speed) and not self.thisLevel.CheckIfHitWall( 
+            (self.player.x, self.player.y - self.player.speed), (self.player.nearestRow, self.player.nearestCol)): 
+            self.player.velX = 0 self.player.velY = -self.player.speed 
+
+        if pygame.key.get_pressed()[pygame.K_ESCAPE] or (js is not None and js.get_button(7)):
+            sys.exit(0)
+
+        elif thisGame.mode == 3:
+            if pygame.key.get_pressed()[pygame.K_RETURN] or (js is not None and js.get_button(JS_STARTBUTTON)):
+                thisGame.StartNewGame()"""
 
     def step(self, action):
         # CheckIfCloseButton(pygame.event.get())
@@ -247,10 +293,14 @@ class PacmanEnv(gym.Env):
         # clock.tick(40)
 
     def reset(self):
+        # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost
+        # the static method CheckIfHitSomething() in lines 108-111 of level.py regards obtaining all pellets
         pass
 
     def render(self, mode="default"):
+        # I believe the __init__() generates the level in level.py
         pass
 
     def close(self):
+        # I believe this would just exit the environment from render()
         pass

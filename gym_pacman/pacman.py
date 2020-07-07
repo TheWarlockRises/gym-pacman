@@ -47,6 +47,8 @@ JS_XAXIS = 0  # axis 0 for left/right (default for most joysticks)
 JS_YAXIS = 1  # axis 1 for up/down (default for most joysticks)
 JS_STARTBUTTON = 0  # button number to start the game. this is a matter of personal preference, and will vary from device to device
 
+rect_list = []  # rect list for drawing
+
 
 def get_image_surface(file_path):
     image = pygame.image.load(file_path).convert()
@@ -224,3 +226,66 @@ class pacman:
             if self.animFrame == 9:
                 # wrap to beginning
                 self.animFrame = 1
+
+
+def GetCrossRef(tileIDName, tileID, tileIDImage, thisLevel):
+    f = open(os.path.join(SCRIPT_PATH, "res", "crossref.txt"), 'r')
+
+    lineNum = 0
+
+    for i in f.readlines():
+        # print " ========= Line " + str(lineNum) + " ============ "
+        while len(i) > 0 and (i[-1] == '\n' or i[-1] == '\r'): i = i[:-1]
+        while len(i) > 0 and (i[0] == '\n' or i[0] == '\r'): i = i[1:]
+        str_splitBySpace = i.split(' ')
+
+        j = str_splitBySpace[0]
+
+        if j == "'" or j == "" or j == "#":
+            # comment / whitespace line
+            # print " ignoring comment line.. "
+            useLine = False
+        else:
+            # print str(wordNum) + ". " + j
+            useLine = True
+
+        if useLine:
+            tileIDName[int(str_splitBySpace[0])] = str_splitBySpace[1]
+            tileID[str_splitBySpace[1]] = int(str_splitBySpace[0])
+
+            thisID = int(str_splitBySpace[0])
+            if not thisID in NO_GIF_TILES:
+                tileIDImage[thisID] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "tiles",
+                                 str_splitBySpace[1] + ".gif"))
+            else:
+                tileIDImage[thisID] = pygame.Surface((TILE_WIDTH, TILE_HEIGHT))
+
+            # change colors in tileIDImage to match maze colors
+            for y in range(0, TILE_WIDTH, 1):
+                for x in range(0, TILE_HEIGHT, 1):
+
+                    if tileIDImage[thisID].get_at(
+                            (x, y)) == IMG_EDGE_LIGHT_COLOR:
+                        # wall edge
+                        tileIDImage[thisID].set_at((x, y),
+                                                   thisLevel.edgeLightColor)
+
+                    elif tileIDImage[thisID].get_at((x, y)) == IMG_FILL_COLOR:
+                        # wall fill
+                        tileIDImage[thisID].set_at((x, y), thisLevel.fillColor)
+
+                    elif tileIDImage[thisID].get_at(
+                            (x, y)) == IMG_EDGE_SHADOW_COLOR:
+                        # pellet color
+                        tileIDImage[thisID].set_at((x, y),
+                                                   thisLevel.edgeShadowColor)
+
+                    elif tileIDImage[thisID].get_at(
+                            (x, y)) == IMG_PELLET_COLOR:
+                        # pellet color
+                        tileIDImage[thisID].set_at((x, y),
+                                                   thisLevel.pelletColor)
+
+        lineNum += 1
+    f.close()

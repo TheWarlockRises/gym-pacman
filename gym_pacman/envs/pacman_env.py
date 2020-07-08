@@ -300,9 +300,7 @@ class PacmanEnv(gym.Env):
             elif self.thisGame.modeTimer == 100:
                 self.thisGame.modeTimer = 1
 
-        self.thisGame.SmartMoveScreen()
-
-        self.screen.blit(self.img_Background, (0, 0))
+        #render things were here
 
         if not self.thisGame.mode == 10:
             self.thisLevel.DrawMap()
@@ -331,9 +329,8 @@ class PacmanEnv(gym.Env):
                                       self.player.y -
                                       self.thisGame.screenPixelPos[1] + 6))
 
-        self.thisGame.DrawScore()
+        #render things were here
 
-        pygame.display.update()
         del rect_list[:]
 
         # clock.tick(40)
@@ -344,7 +341,10 @@ class PacmanEnv(gym.Env):
         pass
 
     def render(self, mode="default"):
-        # I believe the __init__() generates the level in level.py
+        self.thisGame.SmartMoveScreen()
+        self.screen.blit(self.img_Background, (0, 0))
+        self.thisGame.DrawScore()
+        pygame.display.update()
         pass
 
     def close(self):

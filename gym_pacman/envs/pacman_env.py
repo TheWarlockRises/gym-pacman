@@ -158,6 +158,10 @@ class PacmanEnv(gym.Env):
 
     def step(self, action):
         # CheckIfCloseButton(pygame.event.get())
+        # TODO: Keep window from complaining unresponsive
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
         if self.thisGame.mode == 0 or self.thisGame.mode == 4:
             # ready to level start
             # self.thisGame.modeTimer += 1

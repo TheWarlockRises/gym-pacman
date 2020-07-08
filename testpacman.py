@@ -16,7 +16,7 @@ while True:
     pacman.render()
     done = pacman.step(direc)
     clock.tick(40)
-    if random.random() < 0.1:
+    if random.random() < 0.1 or pacman.player.velX == 0 and pacman.player.velY == 0:
         direc = random.randint(0, 3)
     if done:
         break

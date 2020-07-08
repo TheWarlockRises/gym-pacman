@@ -230,9 +230,6 @@ class pacman:
             self.anim_pacmanCurrent = self.anim_pacmanD
         elif self.velY < 0:
             self.anim_pacmanCurrent = self.anim_pacmanU
-        else: # TODO: remove after checking
-            print("did not set cur anim")
-            self.anim_pacmanCurrent = self.anim_pacmanR
 
         screen.blit(self.anim_pacmanCurrent[self.animFrame],
                     (self.x - thisGame.screenPixelPos[0],

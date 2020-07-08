@@ -33,9 +33,16 @@ JS_STARTBUTTON = 0  # button number to start the game. this is a matter of perso
 class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["default"]}
 
-    def __init__(self):
+    def __init__(self, init_gui=False):
+        self.gui = init_gui
+
+        if init_gui:
+            pygame.display.set_mode((1, 1))
+            pygame.display.set_caption("Pacman")
+            init_pygame()
+
         # create the pacman
-        self.player = pacman()
+        self.player = pacman(init_gui)
 
         # create a path_finder object
         self.path = path_finder()
@@ -60,7 +67,14 @@ class PacmanEnv(gym.Env):
         self.thisGame = game()
         self.thisLevel = level()
 
-        self.thisGame.StartNewGame(self.thisLevel, self.thisGame, self.thisFruit, self.player, self.ghosts, self.path, self.tileID, self.tileIDName)
+        self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
+                                   self.thisFruit, self.player, self.ghosts,
+                                   self.path, self.tileID, self.tileIDName,
+                                   self.tileIDImage)
+
+        if init_gui:
+            pygame.display.set_mode(self.thisGame.screenSize)
+            self.screen = pygame.display.get_surface()
 
     """def init_pygame(self):
         # initialise the joystick
@@ -72,9 +86,6 @@ class PacmanEnv(gym.Env):
             js.init()
         else:
             js = None"""
-
-    def init_pygame(self):
-        pass
 
     """def CheckInputs():
         if thisGame.mode == 1 or thisGame.mode == 8 or thisGame.mode == 9:
@@ -163,7 +174,8 @@ class PacmanEnv(gym.Env):
             self.player.Move(self.thisLevel, self.ghosts, self.thisGame,
                              self.path, self.thisFruit, self.tileID)
             for i in range(0, 4, 1):
-                self.ghosts[i].Move(self.path, self.player, self.thisLevel, self.tileID)
+                self.ghosts[i].Move(self.path, self.player, self.thisLevel,
+                                    self.tileID)
             self.thisFruit.Move(self.thisGame)
 
         # elif self.thisGame.mode == 2:
@@ -224,15 +236,18 @@ class PacmanEnv(gym.Env):
                 self.thisLevel.edgeLightColor = (255, 255, 254, 255)
                 self.thisLevel.edgeShadowColor = (255, 255, 254, 255)
                 self.thisLevel.fillColor = (0, 0, 0, 255)
-                GetCrossRef(self.tileIDName, self.tileID, self.tileIDImage,
-                            self.thisLevel)
+                # TODO: GetCrossRef
+                GetImageCrossRef(self.tileIDName, self.tileID,
+                                 self.tileIDImage,
+                                 self.thisLevel)
             elif not normalSet.count(self.thisGame.modeTimer) == 0:
                 # member of normal set
                 self.thisLevel.edgeLightColor = self.oldEdgeLightColor
                 self.thisLevel.edgeShadowColor = self.oldEdgeShadowColor
                 self.thisLevel.fillColor = self.oldFillColor
-                GetCrossRef(self.tileIDName, self.tileID, self.tileIDImage,
-                            self.thisLevel)
+                GetImageCrossRef(self.tileIDName, self.tileID,
+                                 self.tileIDImage,
+                                 self.thisLevel)
             elif self.thisGame.modeTimer == 100:
                 self.thisGame.SetMode(10)
 
@@ -243,10 +258,12 @@ class PacmanEnv(gym.Env):
             ghostState = 1
             self.thisGame.modeTimer += 1
 
-            self.player.Move(self.thisLevel, self.ghosts, self.thisGame, self.path, self.thisFruit, self.tileID)
+            self.player.Move(self.thisLevel, self.ghosts, self.thisGame,
+                             self.path, self.thisFruit, self.tileID)
 
             for i in range(0, 4, 1):
-                self.ghosts[i].Move(self.path, self.player, self.thisLevel, self.tileID)
+                self.ghosts[i].Move(self.path, self.player, self.thisLevel,
+                                    self.tileID)
 
             for i in range(0, 4, 1):
                 if self.ghosts[i].state == 3:
@@ -271,9 +288,11 @@ class PacmanEnv(gym.Env):
             self.check_inputs(action)
             self.thisGame.modeTimer += 1
 
-            self.player.Move(self.thisLevel, self.ghosts, self.thisGame, self.path, self.thisFruit, self.tileID)
+            self.player.Move(self.thisLevel, self.ghosts, self.thisGame,
+                             self.path, self.thisFruit, self.tileID)
             for i in range(0, 4, 1):
-                self.ghosts[i].Move(self.path, self.player, self.thisLevel, self.tileID)
+                self.ghosts[i].Move(self.path, self.player, self.thisLevel,
+                                    self.tileID)
             self.thisFruit.Move(self.thisGame)
 
         elif self.thisGame.mode == 10:
@@ -294,15 +313,18 @@ class PacmanEnv(gym.Env):
                 self.thisLevel.edgeLightColor = (255, 255, 254, 255)
                 self.thisLevel.edgeShadowColor = (255, 255, 254, 255)
                 self.thisLevel.fillColor = (0, 0, 0, 255)
-                GetCrossRef(self.tileIDName, self.tileID, self.tileIDImage,
-                            self.thisLevel)
+                # TODO: GetCrossRef
+                GetImageCrossRef(self.tileIDName, self.tileID,
+                                 self.tileIDImage,
+                                 self.thisLevel)
             elif not normalSet.count(self.thisGame.modeTimer) == 0:
                 # member of normal set
                 self.thisLevel.edgeLightColor = self.oldEdgeLightColor
                 self.thisLevel.edgeShadowColor = self.oldEdgeShadowColor
                 self.thisLevel.fillColor = self.oldFillColor
-                GetCrossRef(self.tileIDName, self.tileID, self.tileIDImage,
-                            self.thisLevel)
+                GetImageCrossRef(self.tileIDName, self.tileID,
+                                 self.tileIDImage,
+                                 self.thisLevel)
             elif self.thisGame.modeTimer == 100:
                 self.thisGame.modeTimer = 1
 
@@ -318,11 +340,13 @@ class PacmanEnv(gym.Env):
     def render(self, mode="default"):
         global rect_list
 
-        self.thisGame.SmartMoveScreen()
-        self.screen.blit(self.img_Background, (0, 0))
+        self.thisGame.SmartMoveScreen(self.player, self.thisLevel,
+                                      self.thisGame)
+        self.screen.blit(get_img_background(), (0, 0))
 
         if not self.thisGame.mode == 10:
-            self.thisLevel.DrawMap()
+            self.thisLevel.DrawMap(self.thisGame, self.tileID, self.screen,
+                                   self.tileIDImage)
 
             if self.thisGame.fruitScoreTimer > 0:
                 if self.thisGame.modeTimer % 2 == 0:
@@ -330,12 +354,13 @@ class PacmanEnv(gym.Env):
                         self.thisFruit.x - self.thisGame.screenPixelPos[
                             0] - 16,
                         self.thisFruit.y - self.thisGame.screenPixelPos[
-                            1] + 4))
+                            1] + 4), self.screen)
 
             for i in range(0, 4, 1):
-                self.ghosts[i].Draw()
-            self.thisFruit.Draw()
-            self.player.Draw()
+                self.ghosts[i].Draw(self.thisGame, self.player, self.screen,
+                                    self.ghosts, self.tileIDImage, self.tileID)
+            self.thisFruit.Draw(self.thisGame, self.screen)
+            self.player.Draw(self.thisGame, self.screen)
 
             if self.thisGame.mode == 3:
                 self.screen.blit(self.thisGame.imHiscores,
@@ -346,9 +371,10 @@ class PacmanEnv(gym.Env):
                                      (self.player.x -
                                       self.thisGame.screenPixelPos[0] - 4,
                                       self.player.y -
-                                      self.thisGame.screenPixelPos[1] + 6))
+                                      self.thisGame.screenPixelPos[1] + 6),
+                                     self.screen)
 
-        self.thisGame.DrawScore()
+        self.thisGame.DrawScore(self.screen, self.thisFruit)
 
         pygame.display.update()
         del rect_list[:]

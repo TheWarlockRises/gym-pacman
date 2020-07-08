@@ -19,10 +19,11 @@ class fruit:
         self.nearestCol = (-1, -1)
 
         self.imFruit = {}
-        """for i in range(0, 5, 1):
+        # TODO: toggle GUI
+        for i in range(0, 5, 1):
             self.imFruit[i] = get_image_surface(
                 os.path.join(SCRIPT_PATH, "res", "sprite",
-                             "fruit " + str(i) + ".gif"))"""
+                             "fruit " + str(i) + ".gif"))
 
         self.currentPath = ""
         self.fruitType = 1

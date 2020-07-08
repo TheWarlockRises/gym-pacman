@@ -49,6 +49,8 @@ JS_STARTBUTTON = 0  # button number to start the game. this is a matter of perso
 
 rect_list = []  # rect list for drawing
 
+img_Background = None
+
 
 def get_image_surface(file_path):
     image = pygame.image.load(file_path).convert()
@@ -58,8 +60,19 @@ def get_image_surface(file_path):
     return image
 
 
+def init_pygame():
+    global img_Background
+    img_Background = get_image_surface(
+        os.path.join(SCRIPT_PATH, "res", "backgrounds", "1.gif"))
+    print(img_Background)
+
+
+def get_img_background():
+    return img_Background
+
+
 class pacman:
-    def __init__(self):
+    def __init__(self, init_gui=False):
         self.x = 0
         self.y = 0
         self.velX = 0
@@ -81,21 +94,22 @@ class pacman:
 
         self.animFrame = 1
 
-        for i in range(1, 9, 1):
-            self.anim_pacmanL[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "sprite",
-                             "pacman-l " + str(i) + ".gif"))
-            self.anim_pacmanR[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "sprite",
-                             "pacman-r " + str(i) + ".gif"))
-            self.anim_pacmanU[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "sprite",
-                             "pacman-u " + str(i) + ".gif"))
-            self.anim_pacmanD[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "sprite",
-                             "pacman-d " + str(i) + ".gif"))
-            self.anim_pacmanS[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "sprite", "pacman.gif"))
+        if init_gui:
+            for i in range(1, 9, 1):
+                self.anim_pacmanL[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "pacman-l " + str(i) + ".gif"))
+                self.anim_pacmanR[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "pacman-r " + str(i) + ".gif"))
+                self.anim_pacmanU[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "pacman-u " + str(i) + ".gif"))
+                self.anim_pacmanD[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "pacman-d " + str(i) + ".gif"))
+                self.anim_pacmanS[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite", "pacman.gif"))
 
         self.pelletSndNum = 0
 
@@ -113,7 +127,9 @@ class pacman:
 
             # check for collisions with other tiles (pellets, etc)
             thisLevel.CheckIfHitSomething((self.x, self.y),
-                                          (self.nearestRow, self.nearestCol), thisLevel, tileID, self, thisGame, ghosts)
+                                          (self.nearestRow, self.nearestCol),
+                                          thisLevel, tileID, self, thisGame,
+                                          ghosts)
 
             # check for collisions with the ghosts
             for i in range(0, 4, 1):
@@ -143,7 +159,8 @@ class pacman:
                             (ghosts[i].nearestRow, ghosts[i].nearestCol), (
                                 thisLevel.GetGhostBoxPos(tileID)[0] + 1,
                                 thisLevel.GetGhostBoxPos(tileID)[1]))
-                        ghosts[i].FollowNextPathWay(path, self, thisLevel, tileID)
+                        ghosts[i].FollowNextPathWay(path, self, thisLevel,
+                                                    tileID)
 
                         # set game mode to brief pause after eating
                         thisGame.SetMode(5)
@@ -213,6 +230,9 @@ class pacman:
             self.anim_pacmanCurrent = self.anim_pacmanD
         elif self.velY < 0:
             self.anim_pacmanCurrent = self.anim_pacmanU
+        else: # TODO: remove after checking
+            print("did not set cur anim")
+            self.anim_pacmanCurrent = self.anim_pacmanR
 
         screen.blit(self.anim_pacmanCurrent[self.animFrame],
                     (self.x - thisGame.screenPixelPos[0],

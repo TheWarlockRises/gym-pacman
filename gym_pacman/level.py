@@ -262,7 +262,7 @@ class level:
                             row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
 
     def LoadLevel(self, levelNum, thisFruit, player, ghosts, path,
-                  thisGame, tileID, tileIDName):
+                  thisGame, tileID, tileIDName, tileIDImage):
         self.map = {}
         self.pellets = 0
 
@@ -383,7 +383,7 @@ class level:
         f.close()
         # reload all tiles and set appropriate colors
         # TODO: Determine where to call GetCrossRef()
-        GetCrossRef(tileIDName, tileID)
+        GetImageCrossRef(tileIDName, tileID, tileIDImage, self)
 
         # load map into the pathfinder object
         path.ResizeMap((self.lvlHeight, self.lvlWidth))

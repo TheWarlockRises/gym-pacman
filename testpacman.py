@@ -8,18 +8,12 @@ channel_backgound = pygame.mixer.Channel(6)
 clock = pygame.time.Clock()
 pygame.init()
 
-window = pygame.display.set_mode((1, 1))
-pygame.display.set_caption("Pacman")
-
-screen = pygame.display.get_surface()
-pygame.mouse.set_visible(False)
-
-pacman = PacmanEnv()
+pacman = PacmanEnv(True)
 
 direc = 0
 
 while True:
-    # pacman.render()
+    pacman.render()
     done = pacman.step(direc)
     clock.tick(40)
     if random.random() < 0.1:

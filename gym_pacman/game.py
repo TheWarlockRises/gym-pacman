@@ -32,7 +32,8 @@ class game:
 
         # numerical display digits
         self.digit = {}
-        """for i in range(0, 10, 1):
+        # TODO: toggle gui
+        for i in range(0, 10, 1):
             self.digit[i] = get_image_surface(
                 os.path.join(SCRIPT_PATH, "res", "text", str(i) + ".gif"))
         self.imLife = get_image_surface(
@@ -43,12 +44,7 @@ class game:
             os.path.join(SCRIPT_PATH, "res", "text", "ready.gif"))
         self.imLogo = get_image_surface(
             os.path.join(SCRIPT_PATH, "res", "text", "logo.gif"))
-        self.imHiscores = self.makehiscorelist()"""
-        self.imLife = None
-        self.imGameOver = None
-        self.imReady = None
-        self.imLogo = None
-        self.imHiscores = None
+        self.imHiscores = self.makehiscorelist()
 
     def init_pygame(self):
         for i in range(0, 10, 1):
@@ -161,13 +157,15 @@ class game:
         """Redraw the high-score list image after pacman dies."""
         self.imHiscores = self.makehiscorelist()
 
-    def StartNewGame(self, thisLevel, thisGame, thisFruit, player, ghosts, path, tileID, tileIDName):
+    def StartNewGame(self, thisLevel, thisGame, thisFruit, player, ghosts,
+                     path, tileID, tileIDName, tileIDImage):
         self.levelNum = 1
         self.score = 0
         self.lives = 3
 
         self.SetMode(0)
-        thisLevel.LoadLevel(thisGame.GetLevelNum(), thisFruit, player, ghosts, path, thisGame, tileID, tileIDName)
+        thisLevel.LoadLevel(thisGame.GetLevelNum(), thisFruit, player, ghosts,
+                            path, thisGame, tileID, tileIDName, tileIDImage)
 
     def AddToScore(self, amount, thisGame):
         extraLifeSet = [25000, 50000, 100000, 150000]
@@ -182,7 +180,8 @@ class game:
     def DrawScore(self, screen, thisFruit):
         global rect_list
         self.DrawNumber(self.score,
-                        (SCORE_XOFFSET, self.screenSize[1] - SCORE_YOFFSET))
+                        (SCORE_XOFFSET, self.screenSize[1] - SCORE_YOFFSET),
+                        screen)
 
         for i in range(0, self.lives, 1):
             screen.blit(self.imLife,
@@ -199,7 +198,7 @@ class game:
             screen.blit(self.imReady, (
                 self.screenSize[0] / 2 - 20, self.screenSize[1] / 2 + 12))
 
-        self.DrawNumber(self.levelNum, (0, self.screenSize[1] - 20))
+        self.DrawNumber(self.levelNum, (0, self.screenSize[1] - 20), screen)
 
     def DrawNumber(self, number, x_y, screen):
         global rect_list

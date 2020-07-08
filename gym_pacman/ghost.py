@@ -36,7 +36,8 @@ class ghost:
         self.currentPath = ""
 
         self.anim = {}
-        """for i in range(1, 7, 1):
+        # TODO: Toggle GUI
+        for i in range(1, 7, 1):
             self.anim[i] = get_image_surface(
                 os.path.join(SCRIPT_PATH, "res", "sprite",
                              "ghost " + str(i) + ".gif"))
@@ -47,7 +48,7 @@ class ghost:
 
                     if self.anim[i].get_at((x, y)) == (255, 0, 0, 255):
                         # default, red ghost body color
-                        self.anim[i].set_at((x, y), ghostcolor[self.id])"""
+                        self.anim[i].set_at((x, y), ghostcolor[self.id])
 
         self.animFrame = 1
         self.animDelay = 0

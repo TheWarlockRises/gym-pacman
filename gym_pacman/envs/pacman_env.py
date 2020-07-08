@@ -145,7 +145,7 @@ class PacmanEnv(gym.Env):
 
     def step(self, action):
         # CheckIfCloseButton(pygame.event.get())
-        if self.thisGame.mode == 0:
+        if self.thisGame.mode == 0 or self.thisGame.mode == 4:
             # ready to level start
             # self.thisGame.modeTimer += 1
             # if self.thisGame.modeTimer == 150:
@@ -162,34 +162,34 @@ class PacmanEnv(gym.Env):
                 self.ghosts[i].Move()
             self.thisFruit.Move()
 
-        elif self.thisGame.mode == 2:
-            # waiting after getting hit by a ghost
-            self.thisGame.modeTimer += 1
+        # elif self.thisGame.mode == 2:
+        # waiting after getting hit by a ghost
+        # self.thisGame.modeTimer += 1
 
-            if self.thisGame.modeTimer == 60:
-                self.thisLevel.Restart()
+        # if self.thisGame.modeTimer == 60:
+        # self.thisLevel.Restart()
 
-                self.thisGame.lives -= 1
-                if self.thisGame.lives == -1:
-                    self.thisGame.updatehiscores(self.thisGame.score)
-                    self.thisGame.SetMode(3)
-                    self.thisGame.drawmidgamehiscores()
-                else:
-                    self.thisGame.SetMode(4)
+        # self.thisGame.lives -= 1
+        # if self.thisGame.lives == -1:
+        # self.thisGame.updatehiscores(self.thisGame.score)
+        # self.thisGame.SetMode(3)
+        # self.thisGame.drawmidgamehiscores()
+        # else:
+        # self.thisGame.SetMode(4)
 
-        elif self.thisGame.mode == 3:
+        elif self.thisGame.mode == 2 or self.thisGame.mode == 3:
             # TODO: Scoring
             pass
             # game over
             # CheckInputs()
 
-        elif self.thisGame.mode == 4:
-            # waiting to start
-            self.thisGame.modeTimer += 1
+        # elif self.thisGame.mode == 4:
+        # waiting to start
+        # self.thisGame.modeTimer += 1
 
-            if self.thisGame.modeTimer == 60:
-                self.thisGame.SetMode(1)
-                self.player.velX = self.player.speed
+        # if self.thisGame.modeTimer == 60:
+        # self.thisGame.SetMode(1)
+        # self.player.velX = self.player.speed
 
         elif self.thisGame.mode == 5:
             # brief pause after munching a vulnerable ghost

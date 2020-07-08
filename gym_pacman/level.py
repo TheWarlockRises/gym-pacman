@@ -1,5 +1,6 @@
 from .pacman import *
 
+
 class level:
     def __init__(self):
         self.lvlWidth = 0
@@ -14,11 +15,9 @@ class level:
         self.pellets = 0
         self.powerPelletBlinkTimer = 0
 
-
     def SetMapTile(self, row_col, newValue):
         (row, col) = row_col
         self.map[(row * self.lvlWidth) + col] = newValue
-
 
     def GetMapTile(self, row_col):
         (row, col) = row_col
@@ -26,7 +25,6 @@ class level:
             return self.map[(row * self.lvlWidth) + col]
         else:
             return 0
-
 
     @staticmethod
     def IsWall(row_col, thisLevel):
@@ -46,7 +44,6 @@ class level:
         else:
             return False
 
-
     def CheckIfHitWall(self, possiblePlayerX_possiblePlayerY, row_col):
         (possiblePlayerX, possiblePlayerY) = possiblePlayerX_possiblePlayerY
         (row, col) = row_col
@@ -57,11 +54,13 @@ class level:
             for iCol in range(col - 1, col + 2, 1):
 
                 if (possiblePlayerX - (iCol * TILE_WIDTH) < TILE_WIDTH) and (
-                        possiblePlayerX - (iCol * TILE_WIDTH) > -TILE_WIDTH) and (
-                        possiblePlayerY - (iRow * TILE_HEIGHT) < TILE_HEIGHT) and (
+                        possiblePlayerX - (
+                        iCol * TILE_WIDTH) > -TILE_WIDTH) and (
+                        possiblePlayerY - (
+                        iRow * TILE_HEIGHT) < TILE_HEIGHT) and (
                         possiblePlayerY - (iRow * TILE_HEIGHT) > -TILE_HEIGHT):
 
-                    if self.IsWall((iRow, iCol)):
+                    if self.IsWall((iRow, iCol), self):
                         numCollisions += 1
 
         if numCollisions > 0:
@@ -69,20 +68,20 @@ class level:
         else:
             return False
 
-
     @staticmethod
     def CheckIfHit(playerX_playerY, x_y, cushion):
         (playerX, playerY) = playerX_playerY
         (x, y) = x_y
-        if (playerX - x < cushion) and (playerX - x > -cushion) and (playerY - y < cushion) and (
+        if (playerX - x < cushion) and (playerX - x > -cushion) and (
+                playerY - y < cushion) and (
                 playerY - y > -cushion):
             return True
         else:
             return False
 
-
     @staticmethod
-    def CheckIfHitSomething(playerX_playerY, row_col, thisLevel, tileID, player, thisGame, ghosts):
+    def CheckIfHitSomething(playerX_playerY, row_col, thisLevel, tileID,
+                            player, thisGame, ghosts):
         (playerX, playerY) = playerX_playerY
         (row, col) = row_col
         for iRow in range(row - 1, row + 2, 1):
@@ -98,12 +97,12 @@ class level:
                     if result == tileID['pellet']:
                         # got a pellet
                         thisLevel.SetMapTile((iRow, iCol), 0)
-                        #snd_pellet[player.pelletSndNum].play()
+                        # snd_pellet[player.pelletSndNum].play()
                         player.pelletSndNum = 1 - player.pelletSndNum
 
                         thisLevel.pellets -= 1
 
-                        thisGame.AddToScore(10)
+                        thisGame.AddToScore(10, thisGame)
 
                         if thisLevel.pellets == 0:
                             # no more pellets left!
@@ -115,9 +114,9 @@ class level:
                         # got a power pellet
                         thisGame.SetMode(9)
                         thisLevel.SetMapTile((iRow, iCol), 0)
-                        #snd_powerpellet.play()
+                        # snd_powerpellet.play()
 
-                        thisGame.AddToScore(100)
+                        thisGame.AddToScore(100, thisGame)
                         thisGame.ghostValue = 200
 
                         thisGame.ghostTimer = 360
@@ -145,7 +144,8 @@ class level:
                         # ran into a horizontal door
                         for i in range(0, thisLevel.lvlWidth, 1):
                             if not i == iCol:
-                                if thisLevel.GetMapTile((iRow, i)) == tileID['door-h']:
+                                if thisLevel.GetMapTile((iRow, i)) == tileID[
+                                    'door-h']:
                                     player.x = i * TILE_WIDTH
 
                                     if player.velX > 0:
@@ -157,7 +157,8 @@ class level:
                         # ran into a vertical door
                         for i in range(0, thisLevel.lvlHeight, 1):
                             if not i == iRow:
-                                if thisLevel.GetMapTile((i, iCol)) == tileID['door-v']:
+                                if thisLevel.GetMapTile((i, iCol)) == tileID[
+                                    'door-v']:
                                     player.y = i * TILE_HEIGHT
 
                                     if player.velY > 0:
@@ -168,7 +169,6 @@ class level:
                     elif result == tileID['heart']:
                         thisGame.SetMode(11)
 
-
     def GetGhostBoxPos(self, tileID):
         for row in range(0, self.lvlHeight, 1):
             for col in range(0, self.lvlWidth, 1):
@@ -176,7 +176,6 @@ class level:
                     return row, col
 
         return False
-
 
     def GetPathwayPairPos(self, tileID, thisLevel):
         doorArray = []
@@ -200,25 +199,27 @@ class level:
             # look for the opposite one
             for i in range(0, thisLevel.lvlWidth, 1):
                 if not i == doorArray[chosenDoor][1]:
-                    if thisLevel.GetMapTile((doorArray[chosenDoor][0], i)) == tileID['door-h']:
-                        return doorArray[chosenDoor], (doorArray[chosenDoor][0], i)
+                    if thisLevel.GetMapTile((doorArray[chosenDoor][0], i)) == \
+                            tileID['door-h']:
+                        return doorArray[chosenDoor], (
+                            doorArray[chosenDoor][0], i)
         else:
             # vertical door was chosen
             # look for the opposite one
             for i in range(0, thisLevel.lvlHeight, 1):
                 if not i == doorArray[chosenDoor][0]:
-                    if thisLevel.GetMapTile((i, doorArray[chosenDoor][1])) == tileID['door-v']:
-                        return doorArray[chosenDoor], (i, doorArray[chosenDoor][1])
+                    if thisLevel.GetMapTile((i, doorArray[chosenDoor][1])) == \
+                            tileID['door-v']:
+                        return doorArray[chosenDoor], (
+                            i, doorArray[chosenDoor][1])
 
         return False
-
 
     def PrintMap(self):
         for row in range(0, self.lvlHeight, 1):
             outputLine = ""
             for col in range(0, self.lvlWidth, 1):
                 outputLine += str(self.GetMapTile((row, col))) + ", "
-
 
     def DrawMap(self, thisGame, tileID, screen, tileIDImage):
         global rect_list
@@ -234,31 +235,40 @@ class level:
                 actualCol = thisGame.screenNearestTilePos[1] + col
 
                 useTile = self.GetMapTile((actualRow, actualCol))
-                if useTile != 0 and useTile != tileID['door-h'] and useTile != tileID['door-v']:
+                if useTile != 0 and useTile != tileID['door-h'] and useTile != \
+                        tileID['door-v']:
                     # if this isn't a blank tile
                     if useTile == tileID['pellet-power']:
                         if self.powerPelletBlinkTimer < 20:
-                            screen.blit(tileIDImage[useTile], (col * TILE_WIDTH - thisGame.screenPixelOffset[0],
-                                                               row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
+                            screen.blit(tileIDImage[useTile], (
+                                col * TILE_WIDTH - thisGame.screenPixelOffset[
+                                    0],
+                                row * TILE_HEIGHT - thisGame.screenPixelOffset[
+                                    1]))
 
                     elif useTile == tileID['showlogo']:
-                        screen.blit(thisGame.imLogo, (col * TILE_WIDTH - thisGame.screenPixelOffset[0],
-                                                      row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
+                        screen.blit(thisGame.imLogo, (
+                            col * TILE_WIDTH - thisGame.screenPixelOffset[0],
+                            row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
 
                     elif useTile == tileID['hiscores']:
-                        screen.blit(thisGame.imHiscores, (col * TILE_WIDTH - thisGame.screenPixelOffset[0],
-                                                          row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
+                        screen.blit(thisGame.imHiscores, (
+                            col * TILE_WIDTH - thisGame.screenPixelOffset[0],
+                            row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
 
                     else:
-                        screen.blit(tileIDImage[useTile], (col * TILE_WIDTH - thisGame.screenPixelOffset[0],
-                                                           row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
+                        screen.blit(tileIDImage[useTile], (
+                            col * TILE_WIDTH - thisGame.screenPixelOffset[0],
+                            row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
 
-
-    def LoadLevel(self, levelNum, thisFruit, player, ghosts, path, GetCrossRef):
+    def LoadLevel(self, levelNum, thisFruit, player, ghosts, path,
+                  thisGame, tileID, tileIDName):
         self.map = {}
         self.pellets = 0
 
-        f = open(os.path.join(SCRIPT_PATH, "res", "levels", str(levelNum) + ".txt"), 'r')
+        f = open(
+            os.path.join(SCRIPT_PATH, "res", "levels", str(levelNum) + ".txt"),
+            'r')
         lineNum = -1
         rowNum = 0
         isReadingLevelData = False
@@ -268,8 +278,10 @@ class level:
             lineNum += 1
 
             # print " ------- Level Line " + str(lineNum) + " -------- "
-            while len(line) > 0 and (line[-1] == "\n" or line[-1] == "\r"): line = line[:-1]
-            while len(line) > 0 and (line[0] == "\n" or line[0] == "\r"): line = line[1:]
+            while len(line) > 0 and (
+                    line[-1] == "\n" or line[-1] == "\r"): line = line[:-1]
+            while len(line) > 0 and (
+                    line[0] == "\n" or line[0] == "\r"): line = line[1:]
             str_splitBySpace = line.split(' ')
 
             j = str_splitBySpace[0]
@@ -370,25 +382,25 @@ class level:
                     rowNum += 1
         f.close()
         # reload all tiles and set appropriate colors
-        GetCrossRef()
+        # TODO: Determine where to call GetCrossRef()
+        GetCrossRef(tileIDName, tileID)
 
         # load map into the pathfinder object
         path.ResizeMap((self.lvlHeight, self.lvlWidth))
 
         for row in range(0, path.size[0], 1):
             for col in range(0, path.size[1], 1):
-                if self.IsWall((row, col)):
+                if self.IsWall((row, col), self):
                     path.SetType((row, col), 1)
                 else:
                     path.SetType((row, col), 0)
 
         # do all the level-starting stuff
-        self.Restart()
-
+        self.Restart(thisGame, player, ghosts, tileID, path, thisFruit)
 
     def Restart(self, thisGame, player, ghosts, tileID, path, thisFruit):
-        if thisGame.levelNum == 2:
-            player.speed = 4
+        # if thisGame.levelNum == 2:
+        # player.speed = 4
 
         for i in range(0, 4, 1):
             # move ghosts back to home
@@ -398,18 +410,21 @@ class level:
             ghosts[i].velY = 0
             ghosts[i].state = 1
             ghosts[i].speed = 2
-            ghosts[i].Move()
+            ghosts[i].Move(path, player, self, tileID)
 
             # give each ghost a path to a random spot (containing a pellet)
             (randRow, randCol) = (0, 0)
 
-            while not self.GetMapTile((randRow, randCol)) == tileID['pellet'] or (randRow, randCol) == (0, 0):
+            while not self.GetMapTile((randRow, randCol)) == tileID[
+                'pellet'] or (randRow, randCol) == (0, 0):
                 randRow = random.randint(1, self.lvlHeight - 2)
                 randCol = random.randint(1, self.lvlWidth - 2)
 
             # print "Ghost " + str(i) + " headed towards " + str((randRow, randCol))
-            ghosts[i].currentPath = path.FindPath((ghosts[i].nearestRow, ghosts[i].nearestCol), (randRow, randCol))
-            ghosts[i].FollowNextPathWay()
+            ghosts[i].currentPath = path.FindPath(
+                (ghosts[i].nearestRow, ghosts[i].nearestCol),
+                (randRow, randCol))
+            ghosts[i].FollowNextPathWay(path, player, self, tileID)
 
         thisFruit.active = False
 

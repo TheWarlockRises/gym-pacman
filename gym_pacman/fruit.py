@@ -1,5 +1,6 @@
 from .pacman import *
 
+
 class fruit:
     def __init__(self):
         # when fruit is not in use, it's in the (-1, -1) position off-screen.
@@ -18,22 +19,28 @@ class fruit:
         self.nearestCol = (-1, -1)
 
         self.imFruit = {}
-        for i in range(0, 5, 1):
+        """for i in range(0, 5, 1):
             self.imFruit[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "sprite", "fruit " + str(i) + ".gif"))
+                os.path.join(SCRIPT_PATH, "res", "sprite",
+                             "fruit " + str(i) + ".gif"))"""
 
         self.currentPath = ""
         self.fruitType = 1
 
+    def init_pygame(self):
+        for i in range(0, 5, 1):
+            self.imFruit[i] = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "sprite",
+                             "fruit " + str(i) + ".gif"))
 
     def Draw(self, thisGame, screen):
         global rect_list
-        if thisGame.mode == 3 or self.active == False:
+        if thisGame.mode == 3 or self.active is False:
             return False
 
         screen.blit(self.imFruit[self.fruitType],
-                    (self.x - thisGame.screenPixelPos[0], self.y - thisGame.screenPixelPos[1] - self.bounceY))
-
+                    (self.x - thisGame.screenPixelPos[0],
+                     self.y - thisGame.screenPixelPos[1] - self.bounceY))
 
     def Move(self, thisGame):
         if not self.active:
@@ -69,7 +76,7 @@ class fruit:
         elif self.bouncei == 16:
             self.bounceY = 0
             self.bouncei = 0
-            #snd_fruitbounce.play()
+            # snd_fruitbounce.play()
 
         self.slowTimer += 1
         if self.slowTimer == 2:
@@ -96,10 +103,9 @@ class fruit:
                     self.active = False
                     thisGame.fruitTimer = 0
 
-
     def FollowNextPathWay(self):
         # only follow this pathway if there is a possible path found!
-        if not self.currentPath == False:
+        if not self.currentPath is False:
 
             if len(self.currentPath) > 0:
                 if self.currentPath[0] == "L":

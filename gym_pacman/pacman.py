@@ -5,7 +5,7 @@ import random
 import pygame
 
 if os.name == "nt":
-    SCRIPT_PATH = os.getcwd()
+    SCRIPT_PATH = os.path.join(os.getcwd(), "gym_pacman")
 else:
     SCRIPT_PATH = sys.path[0]
 
@@ -99,7 +99,7 @@ class pacman:
 
         self.pelletSndNum = 0
 
-    def Move(self, thisLevel, ghosts, thisGame, path, thisFruit):
+    def Move(self, thisLevel, ghosts, thisGame, path, thisFruit, tileID):
         self.nearestRow = int(((self.y + (TILE_WIDTH / 2)) / TILE_WIDTH))
         self.nearestCol = int(((self.x + (TILE_HEIGHT / 2)) / TILE_HEIGHT))
 
@@ -113,7 +113,7 @@ class pacman:
 
             # check for collisions with other tiles (pellets, etc)
             thisLevel.CheckIfHitSomething((self.x, self.y),
-                                          (self.nearestRow, self.nearestCol))
+                                          (self.nearestRow, self.nearestCol), thisLevel, tileID, self, thisGame, ghosts)
 
             # check for collisions with the ghosts
             for i in range(0, 4, 1):
@@ -130,7 +130,7 @@ class pacman:
                         # ghost is vulnerable
                         # give them glasses
                         # make them run
-                        thisGame.AddToScore(thisGame.ghostValue)
+                        thisGame.AddToScore(thisGame.ghostValue, thisGame)
                         thisGame.ghostValue = thisGame.ghostValue * 2
                         # snd_eatgh.play()
 
@@ -141,9 +141,9 @@ class pacman:
                         ghosts[i].y = ghosts[i].nearestRow * TILE_HEIGHT
                         ghosts[i].currentPath = path.FindPath(
                             (ghosts[i].nearestRow, ghosts[i].nearestCol), (
-                                thisLevel.GetGhostBoxPos()[0] + 1,
-                                thisLevel.GetGhostBoxPos()[1]))
-                        ghosts[i].FollowNextPathWay()
+                                thisLevel.GetGhostBoxPos(tileID)[0] + 1,
+                                thisLevel.GetGhostBoxPos(tileID)[1]))
+                        ghosts[i].FollowNextPathWay(path, self, thisLevel, tileID)
 
                         # set game mode to brief pause after eating
                         thisGame.SetMode(5)
@@ -178,7 +178,7 @@ class pacman:
         # deal with fruit timer
         thisGame.fruitTimer += 1
         if thisGame.fruitTimer == 380:
-            pathwayPair = thisLevel.GetPathwayPairPos()
+            pathwayPair = thisLevel.GetPathwayPairPos(tileID, thisLevel)
 
             if not pathwayPair == False:
                 pathwayEntrance = pathwayPair[0]
@@ -228,7 +228,36 @@ class pacman:
                 self.animFrame = 1
 
 
-def GetCrossRef(tileIDName, tileID, tileIDImage, thisLevel):
+def GetCrossRef(tileIDName, tileID):
+    f = open(os.path.join(SCRIPT_PATH, "res", "crossref.txt"), 'r')
+
+    lineNum = 0
+
+    for i in f.readlines():
+        # print " ========= Line " + str(lineNum) + " ============ "
+        while len(i) > 0 and (i[-1] == '\n' or i[-1] == '\r'): i = i[:-1]
+        while len(i) > 0 and (i[0] == '\n' or i[0] == '\r'): i = i[1:]
+        str_splitBySpace = i.split(' ')
+
+        j = str_splitBySpace[0]
+
+        if j == "'" or j == "" or j == "#":
+            # comment / whitespace line
+            # print " ignoring comment line.. "
+            useLine = False
+        else:
+            # print str(wordNum) + ". " + j
+            useLine = True
+
+        if useLine:
+            tileIDName[int(str_splitBySpace[0])] = str_splitBySpace[1]
+            tileID[str_splitBySpace[1]] = int(str_splitBySpace[0])
+
+        lineNum += 1
+    f.close()
+
+
+def GetImageCrossRef(tileIDName, tileID, tileIDImage, thisLevel):
     f = open(os.path.join(SCRIPT_PATH, "res", "crossref.txt"), 'r')
 
     lineNum = 0

@@ -36,6 +36,23 @@ class ghost:
         self.currentPath = ""
 
         self.anim = {}
+        """for i in range(1, 7, 1):
+            self.anim[i] = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "sprite",
+                             "ghost " + str(i) + ".gif"))
+
+            # change the ghost color in this frame
+            for y in range(0, TILE_HEIGHT, 1):
+                for x in range(0, TILE_WIDTH, 1):
+
+                    if self.anim[i].get_at((x, y)) == (255, 0, 0, 255):
+                        # default, red ghost body color
+                        self.anim[i].set_at((x, y), ghostcolor[self.id])"""
+
+        self.animFrame = 1
+        self.animDelay = 0
+
+    def init_pygame(self):
         for i in range(1, 7, 1):
             self.anim[i] = get_image_surface(
                 os.path.join(SCRIPT_PATH, "res", "sprite",
@@ -48,9 +65,6 @@ class ghost:
                     if self.anim[i].get_at((x, y)) == (255, 0, 0, 255):
                         # default, red ghost body color
                         self.anim[i].set_at((x, y), ghostcolor[self.id])
-
-        self.animFrame = 1
-        self.animDelay = 0
 
     def Draw(self, thisGame, player, screen, ghosts, tileIDImage, tileID):
         global rect_list
@@ -133,7 +147,7 @@ class ghost:
 
             self.animDelay = 0
 
-    def Move(self, path, player):
+    def Move(self, path, player, thisLevel, tileID):
         self.x += self.velX
         self.y += self.velY
 
@@ -146,7 +160,7 @@ class ghost:
 
             if self.currentPath is not False and (len(self.currentPath) > 0):
                 self.currentPath = self.currentPath[1:]
-                self.FollowNextPathWay()
+                self.FollowNextPathWay(path, player, thisLevel, tileID)
 
             else:
                 self.x = self.nearestCol * TILE_WIDTH
@@ -156,7 +170,7 @@ class ghost:
                 self.currentPath = path.FindPath(
                     (self.nearestRow, self.nearestCol),
                     (player.nearestRow, player.nearestCol))
-                self.FollowNextPathWay()
+                self.FollowNextPathWay(path, player, thisLevel, tileID)
 
     def FollowNextPathWay(self, path, player, thisLevel, tileID):
         # print "Ghost " + str(self.id) + " rem: " + self.currentPath
@@ -180,7 +194,7 @@ class ghost:
                     self.currentPath = path.FindPath(
                         (self.nearestRow, self.nearestCol),
                         (player.nearestRow, player.nearestCol))
-                    self.FollowNextPathWay()
+                    self.FollowNextPathWay(path, player, thisLevel, tileID)
 
                 else:
                     # glasses found way back to ghost box
@@ -198,4 +212,4 @@ class ghost:
 
                     self.currentPath = path.FindPath(
                         (self.nearestRow, self.nearestCol), (randRow, randCol))
-                    self.FollowNextPathWay()
+                    self.FollowNextPathWay(path, player, thisLevel, tileID)

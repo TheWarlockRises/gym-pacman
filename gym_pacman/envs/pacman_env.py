@@ -60,6 +60,8 @@ class PacmanEnv(gym.Env):
         self.thisGame = game()
         self.thisLevel = level()
 
+        self.thisGame.StartNewGame(self.thisLevel, self.thisGame, self.thisFruit, self.player, self.ghosts, self.path, self.tileID, self.tileIDName)
+
     """def init_pygame(self):
         # initialise the joystick
         if pygame.joystick.get_count() > 0:
@@ -155,12 +157,14 @@ class PacmanEnv(gym.Env):
             # normal gameplay mode
             # CheckInputs()
             # TODO: Use action param to control player.
+            self.check_inputs(action)
             self.thisGame.modeTimer += 1
 
-            self.player.Move()
+            self.player.Move(self.thisLevel, self.ghosts, self.thisGame,
+                             self.path, self.thisFruit, self.tileID)
             for i in range(0, 4, 1):
-                self.ghosts[i].Move()
-            self.thisFruit.Move()
+                self.ghosts[i].Move(self.path, self.player, self.thisLevel, self.tileID)
+            self.thisFruit.Move(self.thisGame)
 
         # elif self.thisGame.mode == 2:
         # waiting after getting hit by a ghost
@@ -235,13 +239,14 @@ class PacmanEnv(gym.Env):
         elif self.thisGame.mode == 8:
             # CheckInputs()
             # TODO: Use action param to control player.
+            self.check_inputs(action)
             ghostState = 1
             self.thisGame.modeTimer += 1
 
-            self.player.Move()
+            self.player.Move(self.thisLevel, self.ghosts, self.thisGame, self.path, self.thisFruit, self.tileID)
 
             for i in range(0, 4, 1):
-                self.ghosts[i].Move()
+                self.ghosts[i].Move(self.path, self.player, self.thisLevel, self.tileID)
 
             for i in range(0, 4, 1):
                 if self.ghosts[i].state == 3:
@@ -258,17 +263,18 @@ class PacmanEnv(gym.Env):
             elif ghostState == 2:
                 self.thisGame.SetMode(9)
 
-            self.thisFruit.Move()
+            self.thisFruit.Move(self.thisGame)
 
         elif self.thisGame.mode == 9:
             # CheckInputs()
             # TODO: Use action param to control player.
+            self.check_inputs(action)
             self.thisGame.modeTimer += 1
 
-            self.player.Move()
+            self.player.Move(self.thisLevel, self.ghosts, self.thisGame, self.path, self.thisFruit, self.tileID)
             for i in range(0, 4, 1):
-                self.ghosts[i].Move()
-            self.thisFruit.Move()
+                self.ghosts[i].Move(self.path, self.player, self.thisLevel, self.tileID)
+            self.thisFruit.Move(self.thisGame)
 
         elif self.thisGame.mode == 10:
             # blank screen before changing levels
@@ -300,7 +306,20 @@ class PacmanEnv(gym.Env):
             elif self.thisGame.modeTimer == 100:
                 self.thisGame.modeTimer = 1
 
-        #render things were here
+        # render things were here
+
+        # clock.tick(40)
+
+    def reset(self):
+        # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost
+        # the static method CheckIfHitSomething() in lines 108-111 of level.py regards obtaining all pellets
+        pass
+
+    def render(self, mode="default"):
+        global rect_list
+
+        self.thisGame.SmartMoveScreen()
+        self.screen.blit(self.img_Background, (0, 0))
 
         if not self.thisGame.mode == 10:
             self.thisLevel.DrawMap()
@@ -329,23 +348,10 @@ class PacmanEnv(gym.Env):
                                       self.player.y -
                                       self.thisGame.screenPixelPos[1] + 6))
 
-        #render things were here
-
-        del rect_list[:]
-
-        # clock.tick(40)
-
-    def reset(self):
-        # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost
-        # the static method CheckIfHitSomething() in lines 108-111 of level.py regards obtaining all pellets
-        pass
-
-    def render(self, mode="default"):
-        self.thisGame.SmartMoveScreen()
-        self.screen.blit(self.img_Background, (0, 0))
         self.thisGame.DrawScore()
+
         pygame.display.update()
-        pass
+        del rect_list[:]
 
     def close(self):
         # I believe this would just exit the environment from render()

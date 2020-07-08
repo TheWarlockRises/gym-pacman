@@ -1,3 +1,4 @@
+from .node import *
 from .pacman import *
 
 
@@ -26,7 +27,7 @@ class path_finder:
         # used in algorithm (adjacent neighbors path finder is allowed to consider)
         self.neighborSet = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
-    def ResizeMap(self, numRows_numCols, node):
+    def ResizeMap(self, numRows_numCols):
         (numRows, numCols) = numRows_numCols
         self.map = {}
         self.size = (numRows, numCols)

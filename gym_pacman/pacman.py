@@ -170,7 +170,7 @@ class pacman:
                 if thisLevel.CheckIfHit((self.x, self.y),
                                         (thisFruit.x, thisFruit.y),
                                         TILE_WIDTH / 2):
-                    thisGame.AddToScore(2500)
+                    thisGame.AddToScore(2500, thisGame)
                     thisFruit.active = False
                     thisGame.fruitTimer = 0
                     thisGame.fruitScoreTimer = 80

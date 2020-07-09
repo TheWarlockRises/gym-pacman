@@ -195,7 +195,9 @@ class ghost:
                     self.currentPath = path.FindPath(
                         (self.nearestRow, self.nearestCol),
                         (player.nearestRow, player.nearestCol))
-                    self.FollowNextPathWay(path, player, thisLevel, tileID)
+                    # TODO: Fix recursive bug when len of path is 0
+                    if len(self.currentPath) > 0:
+                        self.FollowNextPathWay(path, player, thisLevel, tileID)
 
                 else:
                     # glasses found way back to ghost box

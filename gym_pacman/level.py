@@ -1,8 +1,10 @@
+import random
+
 from .pacman import *
 
 
 class level:
-    def __init__(self):
+    def __init__(self, gui=False):
         self.lvlWidth = 0
         self.lvlHeight = 0
         self.edgeLightColor = (255, 255, 0, 255)
@@ -14,6 +16,7 @@ class level:
 
         self.pellets = 0
         self.powerPelletBlinkTimer = 0
+        self.gui = gui
 
     def SetMapTile(self, row_col, newValue):
         (row, col) = row_col
@@ -383,7 +386,10 @@ class level:
         f.close()
         # reload all tiles and set appropriate colors
         # TODO: Determine where to call GetCrossRef()
-        GetImageCrossRef(tileIDName, tileID, tileIDImage, self)
+        if self.gui:
+            GetImageCrossRef(tileIDName, tileID, tileIDImage, self)
+        else:
+            GetCrossRef(tileIDName, tileID)
 
         # load map into the pathfinder object
         path.ResizeMap((self.lvlHeight, self.lvlWidth))

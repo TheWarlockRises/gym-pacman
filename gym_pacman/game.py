@@ -1,8 +1,8 @@
 from .pacman import *
 
 
-class game:
-    def __init__(self):
+class Game:
+    def __init__(self, gui=False):
         self.levelNum = 0
         self.score = 0
         self.lives = 3
@@ -32,33 +32,19 @@ class game:
 
         # numerical display digits
         self.digit = {}
-        # TODO: toggle gui
-        for i in range(0, 10, 1):
-            self.digit[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "text", str(i) + ".gif"))
-        self.imLife = get_image_surface(
-            os.path.join(SCRIPT_PATH, "res", "text", "life.gif"))
-        self.imGameOver = get_image_surface(
-            os.path.join(SCRIPT_PATH, "res", "text", "gameover.gif"))
-        self.imReady = get_image_surface(
-            os.path.join(SCRIPT_PATH, "res", "text", "ready.gif"))
-        self.imLogo = get_image_surface(
-            os.path.join(SCRIPT_PATH, "res", "text", "logo.gif"))
-        self.imHiscores = self.makehiscorelist()
-
-    def init_pygame(self):
-        for i in range(0, 10, 1):
-            self.digit[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "text", str(i) + ".gif"))
-        self.imLife = get_image_surface(
-            os.path.join(SCRIPT_PATH, "res", "text", "life.gif"))
-        self.imGameOver = get_image_surface(
-            os.path.join(SCRIPT_PATH, "res", "text", "gameover.gif"))
-        self.imReady = get_image_surface(
-            os.path.join(SCRIPT_PATH, "res", "text", "ready.gif"))
-        self.imLogo = get_image_surface(
-            os.path.join(SCRIPT_PATH, "res", "text", "logo.gif"))
-        self.imHiscores = self.makehiscorelist()
+        if gui:
+            for i in range(0, 10, 1):
+                self.digit[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "text", str(i) + ".gif"))
+            self.imLife = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "text", "life.gif"))
+            self.imGameOver = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "text", "gameover.gif"))
+            self.imReady = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "text", "ready.gif"))
+            self.imLogo = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "text", "logo.gif"))
+            self.imHiscores = self.makehiscorelist()
 
     @staticmethod
     def defaulthiscorelist():

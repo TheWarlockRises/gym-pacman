@@ -33,16 +33,18 @@ JS_STARTBUTTON = 0  # button number to start the game. this is a matter of perso
 class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["default"]}
 
-    def __init__(self, init_gui=False):
-        self.gui = init_gui
+    def __init__(self, gui=False, pauses=False, sound=False):
+        self.gui = gui
+        self.pauses = pauses
+        self.sound = pauses and sound
 
-        if init_gui:
+        if gui:
             pygame.display.set_mode((1, 1))
             pygame.display.set_caption("Pacman")
             init_pygame()
 
         # create the pacman
-        self.player = pacman(init_gui)
+        self.player = Pacman(gui)
 
         # create a path_finder object
         self.path = path_finder()
@@ -51,10 +53,10 @@ class PacmanEnv(gym.Env):
         self.ghosts = {}
         for i in range(0, 6, 1):
             # remember, ghost[4] is the blue, vulnerable ghost
-            self.ghosts[i] = ghost(i)
+            self.ghosts[i] = Ghost(i, gui)
 
         # create piece of fruit
-        self.thisFruit = fruit()
+        self.thisFruit = Fruit(gui)
 
         self.tileIDName = {}  # gives tile name (when the ID# is known)
         self.tileID = {}  # gives tile ID (when the name is known)
@@ -64,15 +66,15 @@ class PacmanEnv(gym.Env):
         self.oldFillColor = None
 
         # create game and level objects and load first level
-        self.thisGame = game()
-        self.thisLevel = level()
+        self.thisGame = Game(gui)
+        self.thisLevel = level(gui)
 
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
                                    self.path, self.tileID, self.tileIDName,
                                    self.tileIDImage)
 
-        if init_gui:
+        if gui:
             pygame.display.set_mode(self.thisGame.screenSize)
             self.screen = pygame.display.get_surface()
 
@@ -213,10 +215,10 @@ class PacmanEnv(gym.Env):
 
         elif self.thisGame.mode == 5:
             # brief pause after munching a vulnerable ghost
-            self.thisGame.modeTimer += 1
+            # self.thisGame.modeTimer += 1
 
-            if self.thisGame.modeTimer == 20:
-                self.thisGame.SetMode(8)
+            # if self.thisGame.modeTimer == 20:
+            self.thisGame.SetMode(8)
 
         elif self.thisGame.mode == 6:
             # pause after eating all the pellets
@@ -342,6 +344,8 @@ class PacmanEnv(gym.Env):
         pass
 
     def render(self, mode="default"):
+        if not self.gui:
+            return
         global rect_list
 
         self.thisGame.SmartMoveScreen(self.player, self.thisLevel,

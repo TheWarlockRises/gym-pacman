@@ -1,37 +1,8 @@
-import os
-import sys
-import random
-
-import pygame
-
 from .consts import *
 
-if os.name == "nt":
-    SCRIPT_PATH = os.path.join(os.getcwd(), "gym_pacman")
-else:
-    SCRIPT_PATH = sys.path[0]
 
-def get_image_surface(file_path):
-    image = pygame.image.load(file_path).convert()
-    # image_rect = image.get_rect()
-    # image_surface = pygame.Surface((image_rect.width, image_rect.height))
-    # image_surface.blit(image, image_rect)
-    return image
-
-
-def init_pygame():
-    global img_Background
-    img_Background = get_image_surface(
-        os.path.join(SCRIPT_PATH, "res", "backgrounds", "1.gif"))
-    print(img_Background)
-
-
-def get_img_background():
-    return img_Background
-
-
-class pacman:
-    def __init__(self, init_gui=False):
+class Pacman:
+    def __init__(self, gui=False):
         self.x = 0
         self.y = 0
         self.velX = 0
@@ -53,7 +24,7 @@ class pacman:
 
         self.animFrame = 1
 
-        if init_gui:
+        if gui:
             for i in range(1, 9, 1):
                 self.anim_pacmanL[i] = get_image_surface(
                     os.path.join(SCRIPT_PATH, "res", "sprite",

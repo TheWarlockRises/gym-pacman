@@ -1,3 +1,14 @@
+import os
+import sys
+
+import pygame
+
+# WIN???
+if os.name == "nt":
+    SCRIPT_PATH = os.path.join(os.getcwd(), "gym_pacman")
+else:
+    SCRIPT_PATH = sys.path[0]
+
 SCREEN_TILE_SIZE_HEIGHT = 23
 SCREEN_TILE_SIZE_WIDTH = 30
 
@@ -39,3 +50,22 @@ JS_STARTBUTTON = 0  # button number to start the game. this is a matter of perso
 rect_list = []  # rect list for drawing
 
 img_Background = None
+
+
+def get_image_surface(file_path):
+    image = pygame.image.load(file_path).convert()
+    # image_rect = image.get_rect()
+    # image_surface = pygame.Surface((image_rect.width, image_rect.height))
+    # image_surface.blit(image, image_rect)
+    return image
+
+
+def init_pygame():
+    global img_Background
+    img_Background = get_image_surface(
+        os.path.join(SCRIPT_PATH, "res", "backgrounds", "1.gif"))
+    print(img_Background)
+
+
+def get_img_background():
+    return img_Background

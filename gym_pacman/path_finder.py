@@ -35,7 +35,7 @@ class path_finder:
         # initialize path_finder map to a 2D array of empty nodes
         for row in range(0, self.size[0], 1):
             for col in range(0, self.size[1], 1):
-                self.Set((row, col), node())
+                self.Set((row, col), Node())
                 self.SetType((row, col), 0)
 
     def CleanUpTemp(self):

@@ -1,8 +1,8 @@
 from .pacman import *
 
 
-class fruit:
-    def __init__(self):
+class Fruit:
+    def __init__(self, gui=False):
         # when fruit is not in use, it's in the (-1, -1) position off-screen.
         self.slowTimer = 0
         self.x = -TILE_WIDTH
@@ -19,23 +19,16 @@ class fruit:
         self.nearestCol = (-1, -1)
 
         self.imFruit = {}
-        # TODO: toggle GUI
-        for i in range(0, 5, 1):
-            self.imFruit[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "sprite",
-                             "fruit " + str(i) + ".gif"))
+        if gui:
+            for i in range(0, 5, 1):
+                self.imFruit[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "fruit " + str(i) + ".gif"))
 
         self.currentPath = ""
         self.fruitType = 1
 
-    def init_pygame(self):
-        for i in range(0, 5, 1):
-            self.imFruit[i] = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "sprite",
-                             "fruit " + str(i) + ".gif"))
-
     def Draw(self, thisGame, screen):
-        global rect_list
         if thisGame.mode == 3 or self.active is False:
             return False
 

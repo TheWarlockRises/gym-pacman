@@ -1,6 +1,8 @@
 from gym.envs.registration import register
 
-from .envs import PacmanEnv
+from .envs import *
+from .res import *
+from . import *
 
 register(
     id='Pacman-v0',

@@ -134,6 +134,19 @@ class PacmanEnv(gym.Env):
 
         elif self.thisGame.mode == 2 or self.thisGame.mode == 3:
             # TODO: Scoring
+            """
+            score = 0
+            if pac-dot eaten:
+                score += 10
+            elif power pellet eaten: 
+                score += 50
+            elif cherry eaten:
+                score += 100
+            elif strawberry eaten:
+                score += 300
+            elif orange eaten:
+                score 
+            """
             pass
             # game over
             # CheckInputs()

@@ -1,1 +1,1 @@
-graft gym_pacman/res
+include gym_pacman/res**

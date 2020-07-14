@@ -5,7 +5,7 @@ class Game:
     def __init__(self, gui=False):
         self.levelNum = 0
         self.score = 0
-        self.lives = 3
+        self.lives = 0
 
         self.mode = 0
         self.modeTimer = 0
@@ -16,7 +16,6 @@ class Game:
         self.fruitScorePos = (0, 0)
 
         # self.SetMode(3)
-        self.SetMode(0)
 
         # camera variables
         self.screenTileSize = (SCREEN_TILE_SIZE_HEIGHT, SCREEN_TILE_SIZE_WIDTH)
@@ -149,7 +148,7 @@ class Game:
         self.score = 0
         self.lives = 3
 
-        self.SetMode(0)
+        self.SetMode(1)
         thisLevel.LoadLevel(thisGame.GetLevelNum(), thisFruit, player, ghosts,
                             path, thisGame, tileID, tileIDName, tileIDImage)
 

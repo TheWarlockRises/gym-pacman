@@ -59,7 +59,6 @@ def init_pygame():
     global img_Background
     img_Background = get_image_surface(
         os.path.join(SCRIPT_PATH, "res", "backgrounds", "1.gif"))
-    print(img_Background)
 
 
 def get_img_background():

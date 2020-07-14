@@ -1,13 +1,8 @@
 import os
-import sys
 
 import pygame
 
-# WIN???
-if os.name == "nt":
-    SCRIPT_PATH = os.path.join(os.getcwd(), "gym_pacman")
-else:
-    SCRIPT_PATH = sys.path[0]
+SCRIPT_PATH = os.path.split(__file__)[0]
 
 SCREEN_TILE_SIZE_HEIGHT = 23
 SCREEN_TILE_SIZE_WIDTH = 30

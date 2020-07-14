@@ -70,7 +70,8 @@ class Pacman:
 
                     if ghosts[i].state == 1:
                         # ghost is normal
-                        thisGame.SetMode(2)
+                        #thisGame.SetMode(2)
+                        return -9999
 
                     elif ghosts[i].state == 2:
                         # ghost is vulnerable
@@ -93,7 +94,8 @@ class Pacman:
                                                     tileID)
 
                         # set game mode to brief pause after eating
-                        thisGame.SetMode(5)
+                        #thisGame.SetMode(5)
+                        return 200
 
             # check for collisions with the fruit
             if thisFruit.active:
@@ -105,6 +107,8 @@ class Pacman:
                     thisGame.fruitTimer = 0
                     thisGame.fruitScoreTimer = 80
                     # snd_eatfruit.play()
+                    return 2500
+            return 1
 
         else:
             # we're going to hit a wall -- stop moving

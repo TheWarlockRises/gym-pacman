@@ -110,8 +110,9 @@ class level:
                         if thisLevel.pellets == 0:
                             # no more pellets left!
                             # WON THE LEVEL
-                            thisGame.SetMode(6)
-
+                            #thisGame.SetMode(6)
+                            return 9999
+                        return 10
 
                     elif result == tileID['pellet-power']:
                         # got a power pellet
@@ -126,8 +127,9 @@ class level:
                         for i in range(0, 4, 1):
                             if ghosts[i].state == 1:
                                 ghosts[i].state = 2
+                        return 100
 
-                                """
+                        """
                                 # Must line up with grid before invoking a new path (for now)
                                 ghosts[i].x = ghosts[i].nearestCol * TILE_HEIGHT
                                 ghosts[i].y = ghosts[i].nearestRow * TILE_WIDTH								
@@ -141,7 +143,7 @@ class level:
                                 ghosts[i].currentPath = path.FindPath( (ghosts[i].nearestRow, ghosts[i].nearestCol), (randRow, randCol) )
     
                                 ghosts[i].FollowNextPathWay()
-                                """
+                        """
 
                     elif result == tileID['door-h']:
                         # ran into a horizontal door
@@ -155,6 +157,7 @@ class level:
                                         player.x += TILE_WIDTH
                                     else:
                                         player.x -= TILE_WIDTH
+                        return 1
 
                     elif result == tileID['door-v']:
                         # ran into a vertical door
@@ -168,6 +171,7 @@ class level:
                                         player.y += TILE_HEIGHT
                                     else:
                                         player.y -= TILE_HEIGHT
+                        return 1
 
                     elif result == tileID['heart']:
                         thisGame.SetMode(11)

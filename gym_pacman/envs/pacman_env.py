@@ -115,6 +115,65 @@ class PacmanEnv(gym.Env):
         self.thisFruit.Move(self.thisGame)
 
         # TODO: Set observations, reward, etc.
+        vision = []
+        dir = ((1, 0), (0, -1), (-1, 0), (0, 1))
+        doorh = self.tileID["door-h"]
+        doorv = self.tileID["door-v"]
+        pel = self.tileID["pellet"]
+        ppel = self.tileID["pellet-power"]
+        fx = self.thisFruit.nearestCol
+        fy = self.thisFruit.nearestRow
+        gxy = list((g.nearestCol, g.nearestRow) for g in
+                   filter(lambda x: x.state == 1, self.ghosts.values()))
+        vxy = list((g.nearestCol, g.nearestRow) for g in
+                   filter(lambda x: x.state == 2, self.ghosts.values()))
+
+        for d in range(4):
+            blocked = False
+            x = self.player.nearestCol
+            y = self.player.nearestRow
+            tile = self.thisLevel.GetMapTile((y, x))
+            if any(x == g[0] and y == g[1] for g in gxy):
+                vision.append(-2)
+            elif any(x == g[0] and y == g[1] for g in vxy):
+                vision.append(3)
+            elif self.thisFruit.active and fx == x and fy == y:
+                vision.append(4)
+            elif tile == 0 or tile == doorh or tile == doorv:
+                vision.append(0)
+            elif tile == pel:
+                vision.append(1)
+            elif tile == ppel:
+                vision.append(2)
+            else:
+                vision.append(-1)
+
+            for _ in range(8):
+                if blocked:
+                    vision.append(-1)
+                else:
+                    # y is row, x is col
+                    x += dir[d][0]
+                    y += dir[d][1]
+                    x %= self.thisLevel.lvlWidth
+                    y %= self.thisLevel.lvlHeight
+                    tile = self.thisLevel.GetMapTile((y, x))
+                    if any(x == g[0] and y == g[1] for g in gxy):
+                        vision.append(-2)
+                    elif any(x == g[0] and y == g[1] for g in vxy):
+                        vision.append(3)
+                    elif self.thisFruit.active and fx == x and fy == y:
+                        vision.append(4)
+                    elif tile == 0 or tile == doorh or tile == doorv:
+                        vision.append(0)
+                    elif tile == pel:
+                        vision.append(1)
+                    elif tile == ppel:
+                        vision.append(2)
+                    else:
+                        vision.append(-1)
+                        blocked = True
+
         return self.thisGame.mode == 2
 
     def reset(self):

@@ -110,7 +110,7 @@ class level:
                         if thisLevel.pellets == 0:
                             # no more pellets left!
                             # WON THE LEVEL
-                            #thisGame.SetMode(6)
+                            thisGame.SetMode(6)
                             return 9999
                         return 10
 
@@ -129,22 +129,6 @@ class level:
                                 ghosts[i].state = 2
                         return 100
 
-                        """
-                                # Must line up with grid before invoking a new path (for now)
-                                ghosts[i].x = ghosts[i].nearestCol * TILE_HEIGHT
-                                ghosts[i].y = ghosts[i].nearestRow * TILE_WIDTH								
-    
-                                # give each ghost a path to a random spot (containing a pellet)
-                                (randRow, randCol) = (0, 0)
-    
-                                while not self.GetMapTile((randRow, randCol)) == tileID[ 'pellet' ] or (randRow, randCol) == (0, 0):
-                                    randRow = random.randint(1, self.lvlHeight - 2)
-                                    randCol = random.randint(1, self.lvlWidth - 2)
-                                ghosts[i].currentPath = path.FindPath( (ghosts[i].nearestRow, ghosts[i].nearestCol), (randRow, randCol) )
-    
-                                ghosts[i].FollowNextPathWay()
-                        """
-
                     elif result == tileID['door-h']:
                         # ran into a horizontal door
                         for i in range(0, thisLevel.lvlWidth, 1):
@@ -157,7 +141,6 @@ class level:
                                         player.x += TILE_WIDTH
                                     else:
                                         player.x -= TILE_WIDTH
-                        return 1
 
                     elif result == tileID['door-v']:
                         # ran into a vertical door
@@ -171,10 +154,7 @@ class level:
                                         player.y += TILE_HEIGHT
                                     else:
                                         player.y -= TILE_HEIGHT
-                        return 1
-
-                    elif result == tileID['heart']:
-                        thisGame.SetMode(11)
+        return 0
 
     def GetGhostBoxPos(self, tileID):
         for row in range(0, self.lvlHeight, 1):

@@ -46,6 +46,7 @@ class Pacman:
     def Move(self, thisLevel, ghosts, thisGame, path, thisFruit, tileID):
         self.nearestRow = int(((self.y + (TILE_WIDTH / 2)) / TILE_WIDTH))
         self.nearestCol = int(((self.x + (TILE_HEIGHT / 2)) / TILE_HEIGHT))
+        score = 1
 
         # make sure the current velocity will not cause a collision before moving
         if not thisLevel.CheckIfHitWall(
@@ -56,10 +57,12 @@ class Pacman:
             self.y += self.velY
 
             # check for collisions with other tiles (pellets, etc)
-            thisLevel.CheckIfHitSomething((self.x, self.y),
-                                          (self.nearestRow, self.nearestCol),
-                                          thisLevel, tileID, self, thisGame,
-                                          ghosts)
+            score += thisLevel.CheckIfHitSomething((self.x, self.y),
+                                                   (self.nearestRow,
+                                                    self.nearestCol),
+                                                   thisLevel, tileID, self,
+                                                   thisGame,
+                                                   ghosts)
 
             # check for collisions with the ghosts
             for i in range(0, 4, 1):
@@ -70,14 +73,15 @@ class Pacman:
 
                     if ghosts[i].state == 1:
                         # ghost is normal
-                        #thisGame.SetMode(2)
-                        return -9999
+                        thisGame.SetMode(2)
+                        score -= 9999
 
                     elif ghosts[i].state == 2:
                         # ghost is vulnerable
                         # give them glasses
                         # make them run
                         thisGame.AddToScore(thisGame.ghostValue, thisGame)
+                        score += thisGame.ghostValue
                         thisGame.ghostValue = thisGame.ghostValue * 2
                         # snd_eatgh.play()
 
@@ -94,8 +98,7 @@ class Pacman:
                                                     tileID)
 
                         # set game mode to brief pause after eating
-                        #thisGame.SetMode(5)
-                        return 200
+                        # thisGame.SetMode(5)
 
             # check for collisions with the fruit
             if thisFruit.active:
@@ -103,12 +106,11 @@ class Pacman:
                                         (thisFruit.x, thisFruit.y),
                                         TILE_WIDTH / 2):
                     thisGame.AddToScore(2500, thisGame)
+                    score += 2500
                     thisFruit.active = False
                     thisGame.fruitTimer = 0
                     thisGame.fruitScoreTimer = 80
                     # snd_eatfruit.play()
-                    return 2500
-            return 1
 
         else:
             # we're going to hit a wall -- stop moving
@@ -149,6 +151,8 @@ class Pacman:
 
         if thisGame.fruitScoreTimer > 0:
             thisGame.fruitScoreTimer -= 1
+
+        return score
 
     def Draw(self, thisGame, screen):
         global rect_list

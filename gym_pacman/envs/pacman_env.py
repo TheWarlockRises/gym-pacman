@@ -107,8 +107,8 @@ class PacmanEnv(gym.Env):
         self.thisGame.modeTimer += 1
 
         # TODO: Need to extract observations from entity Move functions.
-        self.player.Move(self.thisLevel, self.ghosts, self.thisGame,
-                         self.path, self.thisFruit, self.tileID)
+        score = self.player.Move(self.thisLevel, self.ghosts, self.thisGame,
+                                 self.path, self.thisFruit, self.tileID)
         for i in range(0, 4, 1):
             self.ghosts[i].Move(self.path, self.player, self.thisLevel,
                                 self.tileID)
@@ -174,7 +174,8 @@ class PacmanEnv(gym.Env):
                         vision.append(-1)
                         blocked = True
 
-        return self.thisGame.mode == 2
+        done = self.thisGame.mode == 2 or self.thisGame.mode == 6
+        return vision, score, done
 
     def reset(self):
         # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost

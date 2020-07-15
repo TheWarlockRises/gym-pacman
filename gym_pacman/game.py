@@ -252,7 +252,7 @@ class Game:
     def SetMode(self, newMode):
         self.mode = newMode
         self.modeTimer = 0
-        print("Mode set to {}".format(newMode))
+        # print("Mode set to {}".format(newMode))
 
         """if newMode == 0:
             self.PlayBackgoundSound(snd_levelintro)

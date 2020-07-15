@@ -175,11 +175,15 @@ class PacmanEnv(gym.Env):
                         blocked = True
 
         done = self.thisGame.mode == 2 or self.thisGame.mode == 6
-        return vision, score, done
+        return vision, score, done, {}
 
     def reset(self):
         # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost
         # the static method CheckIfHitSomething() in lines 108-111 of level.py regards obtaining all pellets
+        self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
+                                   self.thisFruit, self.player, self.ghosts,
+                                   self.path, self.tileID, self.tileIDName,
+                                   self.tileIDImage)
         pass
 
     def render(self, mode="human"):

@@ -46,7 +46,7 @@ class Pacman:
     def Move(self, thisLevel, ghosts, thisGame, path, thisFruit, tileID):
         self.nearestRow = int(((self.y + (TILE_WIDTH / 2)) / TILE_WIDTH))
         self.nearestCol = int(((self.x + (TILE_HEIGHT / 2)) / TILE_HEIGHT))
-        score = 1
+        score = -1
 
         # make sure the current velocity will not cause a collision before moving
         if not thisLevel.CheckIfHitWall(

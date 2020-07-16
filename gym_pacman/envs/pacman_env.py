@@ -148,7 +148,7 @@ class PacmanEnv(gym.Env):
             else:
                 vision.append(-1)
 
-            for _ in range(8):
+            for _ in range(5):
                 if blocked:
                     vision.append(-1)
                 else:

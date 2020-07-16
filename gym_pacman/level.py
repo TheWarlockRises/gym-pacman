@@ -154,7 +154,7 @@ class level:
                                         player.y += TILE_HEIGHT
                                     else:
                                         player.y -= TILE_HEIGHT
-        return 0
+        return -1
 
     def GetGhostBoxPos(self, tileID):
         for row in range(0, self.lvlHeight, 1):

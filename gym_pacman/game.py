@@ -1,4 +1,5 @@
 from .pacman import *
+import random
 
 
 class Game:
@@ -148,8 +149,10 @@ class Game:
         self.score = 0
         self.lives = 3
 
+        levelNum = random.randrange(1, 10)
+
         self.SetMode(1)
-        thisLevel.LoadLevel(thisGame.GetLevelNum(), thisFruit, player, ghosts,
+        thisLevel.LoadLevel(levelNum, thisFruit, player, ghosts,
                             path, thisGame, tileID, tileIDName, tileIDImage)
 
     def AddToScore(self, amount, thisGame):

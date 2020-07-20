@@ -1,6 +1,7 @@
 import sys
 
 import gym
+import numpy as np
 
 from ..fruit import *
 from ..game import *
@@ -26,7 +27,7 @@ from ..path_finder import *
 class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, gui=False, pauses=False, sound=False):
+    def __init__(self, gui=False, pauses=False, randomized=False, sound=False):
         self.gui = gui
         self.pauses = pauses
         self.sound = pauses and sound
@@ -60,7 +61,7 @@ class PacmanEnv(gym.Env):
 
         # create game and level objects and load first level
         self.thisGame = Game(gui)
-        self.thisLevel = level(gui)
+        self.thisLevel = level(gui, randomized)
 
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
@@ -175,7 +176,8 @@ class PacmanEnv(gym.Env):
                         blocked = True
 
         done = self.thisGame.mode == 2 or self.thisGame.mode == 6
-        return vision, score, done, {}
+        return np.array(vision), score, done, {"pacmanx": self.player.velX,
+                                               "pacmany": self.player.velY}
 
     def reset(self):
         # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost

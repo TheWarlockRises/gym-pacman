@@ -4,7 +4,7 @@ from .pacman import *
 
 
 class level:
-    def __init__(self, gui=False):
+    def __init__(self, gui=False, randomized=False):
         self.lvlWidth = 0
         self.lvlHeight = 0
         self.edgeLightColor = (255, 255, 0, 255)
@@ -16,7 +16,9 @@ class level:
 
         self.pellets = 0
         self.powerPelletBlinkTimer = 0
+
         self.gui = gui
+        self.randomized = randomized
 
     def SetMapTile(self, row_col, newValue):
         (row, col) = row_col
@@ -396,6 +398,14 @@ class level:
             # move ghosts back to home
             ghosts[i].x = ghosts[i].homeX
             ghosts[i].y = ghosts[i].homeY
+            if self.randomized:
+                (randRow, randCol) = (0, 0)
+                while not self.GetMapTile((randRow, randCol)) == tileID[
+                    'pellet'] or (randRow, randCol) == (0, 0):
+                    randRow = random.randint(1, self.lvlHeight - 2)
+                    randCol = random.randint(1, self.lvlWidth - 2)
+                ghosts[i].x = randCol * TILE_WIDTH
+                ghosts[i].y = randRow * TILE_HEIGHT
             ghosts[i].velX = 0
             ghosts[i].velY = 0
             ghosts[i].state = 1
@@ -422,6 +432,15 @@ class level:
 
         player.x = player.homeX
         player.y = player.homeY
+        if self.randomized:
+            (randRow, randCol) = (0, 0)
+            while not self.GetMapTile((randRow, randCol)) == tileID[
+                'pellet'] or (randRow, randCol) == (0, 0):
+                randRow = random.randint(1, self.lvlHeight - 2)
+                randCol = random.randint(1, self.lvlWidth - 2)
+            player.x = randCol * TILE_WIDTH
+            player.y = randRow * TILE_HEIGHT
+
         player.velX = 0
         player.velY = 0
 

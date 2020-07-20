@@ -196,7 +196,8 @@ class Ghost:
                         (self.nearestRow, self.nearestCol),
                         (player.nearestRow, player.nearestCol))
                     # TODO: Fix recursive bug when len of path is 0
-                    if len(self.currentPath) > 0:
+                    if self.currentPath is not False and \
+                            len(self.currentPath) > 0:
                         self.FollowNextPathWay(path, player, thisLevel, tileID)
 
                 else:

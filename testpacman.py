@@ -10,15 +10,15 @@ channel_backgound = pygame.mixer.Channel(6)
 clock = pygame.time.Clock()
 pygame.init()
 
-pacman = PacmanEnv(True)
+pacman = PacmanEnv(gui=True, randomized=True)
 
 direc = 0
 
 while True:
     pacman.render()
-    _, _, done, _ = pacman.step(direc)
-    # clock.tick(40)
-    if random.random() < 0.1 or pacman.player.velX == 0 and pacman.player.velY == 0:
+    _, _, done, info = pacman.step(direc)
+    clock.tick(40)
+    if random.random() < 0.1 or info["pacmanx"] == 0 and info["pacmany"] == 0:
         direc = random.randint(0, 3)
     if done:
         pacman.reset()

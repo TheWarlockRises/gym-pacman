@@ -24,6 +24,9 @@ class Pacman:
 
         self.animFrame = 1
 
+        self.prev_velx = 0
+        self.prev_vely = 0
+
         if gui:
             for i in range(1, 9, 1):
                 self.anim_pacmanL[i] = get_image_surface(
@@ -46,7 +49,7 @@ class Pacman:
     def Move(self, thisLevel, ghosts, thisGame, path, thisFruit, tileID):
         self.nearestRow = int(((self.y + (TILE_WIDTH / 2)) / TILE_WIDTH))
         self.nearestCol = int(((self.x + (TILE_HEIGHT / 2)) / TILE_HEIGHT))
-        score = -1
+        score = 1
 
         # make sure the current velocity will not cause a collision before moving
         if not thisLevel.CheckIfHitWall(
@@ -55,6 +58,12 @@ class Pacman:
             # it's ok to Move
             self.x += self.velX
             self.y += self.velY
+
+            # TODO: Score penalties for changing directions.
+            if self.prev_velx != self.velX:
+                score -= 1
+            if self.prev_vely != self.velY:
+                score -= 1
 
             # check for collisions with other tiles (pellets, etc)
             score += thisLevel.CheckIfHitSomething((self.x, self.y),
@@ -117,6 +126,10 @@ class Pacman:
             # we're going to hit a wall -- stop moving
             self.velX = 0
             self.velY = 0
+            score = 0
+
+        self.prev_velx = self.velX
+        self.prev_vely = self.velY
 
         # deal with power-pellet ghost timer
         if thisGame.ghostTimer > 0:

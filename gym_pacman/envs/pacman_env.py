@@ -125,17 +125,17 @@ class PacmanEnv(gym.Env):
                    filter(lambda g: g.state == 2, self.ghosts.values()))
         tile = self.thisLevel.GetMapTile((y, x))
         if any(x == g[0] and y == g[1] for g in gxy):
-            vision[0] = -2
+            vision[0] = -1
         elif any(x == g[0] and y == g[1] for g in vxy):
-            vision[0] = 3
-        elif self.thisFruit.active and fx == x and fy == y:
             vision[0] = 4
+        elif self.thisFruit.active and fx == x and fy == y:
+            vision[0] = 5
         elif tile == 0 or tile == doorh or tile == doorv:
-            vision[0] = 0
-        elif tile == pel:
             vision[0] = 1
-        elif tile == ppel:
+        elif tile == pel:
             vision[0] = 2
+        elif tile == ppel:
+            vision[0] = 3
         else:
             vision[0] = -1
 
@@ -146,7 +146,7 @@ class PacmanEnv(gym.Env):
             for r in range(self.sensor_range):
                 index = r * 4 + d + 1
                 if blocked:
-                    vision[index] = -1
+                    continue
                 else:
                     x += dir[d][0]
                     y += dir[d][1]
@@ -154,19 +154,18 @@ class PacmanEnv(gym.Env):
                     y %= self.thisLevel.lvlHeight
                     tile = self.thisLevel.GetMapTile((y, x))
                     if any(x == g[0] and y == g[1] for g in gxy):
-                        vision[index] = -2
-                    elif any(x == g[0] and y == g[1] for g in vxy):
-                        vision[index] = 3
-                    elif self.thisFruit.active and fx == x and fy == y:
-                        vision[index] = 4
-                    elif tile == 0 or tile == doorh or tile == doorv:
-                        vision[index] = 0
-                    elif tile == pel:
-                        vision[index] = 1
-                    elif tile == ppel:
-                        vision[index] = 2
-                    else:
                         vision[index] = -1
+                    elif any(x == g[0] and y == g[1] for g in vxy):
+                        vision[index] = 4
+                    elif self.thisFruit.active and fx == x and fy == y:
+                        vision[index] = 5
+                    elif tile == 0 or tile == doorh or tile == doorv:
+                        vision[index] = 1
+                    elif tile == pel:
+                        vision[index] = 2
+                    elif tile == ppel:
+                        vision[index] = 3
+                    else:
                         blocked = True
 
         done = self.thisGame.mode == 2 or self.thisGame.mode == 6

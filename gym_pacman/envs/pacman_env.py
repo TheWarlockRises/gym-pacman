@@ -1,5 +1,3 @@
-import sys
-
 import gym
 import numpy as np
 
@@ -27,10 +25,11 @@ from ..path_finder import *
 class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, gui=False, pauses=False, randomized=False, sound=False):
+    def __init__(self, gui=False, randomized=False, sensor_range=10,
+                 sound=False):
         self.gui = gui
-        self.pauses = pauses
-        self.sound = pauses and sound
+        self.sensor_range = sensor_range
+        self.sound = sound
 
         if gui:
             pygame.display.set_mode((1, 1))
@@ -95,12 +94,6 @@ class PacmanEnv(gym.Env):
             self.player.velY = self.player.speed
 
     def step(self, action):
-        # CheckIfCloseButton(pygame.event.get())
-        # TODO: Keep window from complaining unresponsive
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit(0)
-
         # normal gameplay mode
         # CheckInputs()
         # TODO: Use action param to control player.
@@ -116,63 +109,64 @@ class PacmanEnv(gym.Env):
         self.thisFruit.Move(self.thisGame)
 
         # TODO: Set observations, reward, etc.
-        vision = []
+        vision = [0] * (self.sensor_range * 4 + 1)
         dir = ((1, 0), (0, -1), (-1, 0), (0, 1))
         doorh = self.tileID["door-h"]
         doorv = self.tileID["door-v"]
         pel = self.tileID["pellet"]
         ppel = self.tileID["pellet-power"]
+        x = self.player.nearestCol
+        y = self.player.nearestRow
         fx = self.thisFruit.nearestCol
         fy = self.thisFruit.nearestRow
         gxy = list((g.nearestCol, g.nearestRow) for g in
-                   filter(lambda x: x.state == 1, self.ghosts.values()))
+                   filter(lambda g: g.state == 1, self.ghosts.values()))
         vxy = list((g.nearestCol, g.nearestRow) for g in
-                   filter(lambda x: x.state == 2, self.ghosts.values()))
+                   filter(lambda g: g.state == 2, self.ghosts.values()))
+        tile = self.thisLevel.GetMapTile((y, x))
+        if any(x == g[0] and y == g[1] for g in gxy):
+            vision[0] = -2
+        elif any(x == g[0] and y == g[1] for g in vxy):
+            vision[0] = 3
+        elif self.thisFruit.active and fx == x and fy == y:
+            vision[0] = 4
+        elif tile == 0 or tile == doorh or tile == doorv:
+            vision[0] = 0
+        elif tile == pel:
+            vision[0] = 1
+        elif tile == ppel:
+            vision[0] = 2
+        else:
+            vision[0] = -1
 
         for d in range(4):
             blocked = False
             x = self.player.nearestCol
             y = self.player.nearestRow
-            tile = self.thisLevel.GetMapTile((y, x))
-            if any(x == g[0] and y == g[1] for g in gxy):
-                vision.append(-2)
-            elif any(x == g[0] and y == g[1] for g in vxy):
-                vision.append(3)
-            elif self.thisFruit.active and fx == x and fy == y:
-                vision.append(4)
-            elif tile == 0 or tile == doorh or tile == doorv:
-                vision.append(0)
-            elif tile == pel:
-                vision.append(1)
-            elif tile == ppel:
-                vision.append(2)
-            else:
-                vision.append(-1)
-
-            for _ in range(5):
+            for r in range(self.sensor_range):
+                index = r * 4 + d + 1
                 if blocked:
-                    vision.append(-1)
+                    vision[index] = -1
                 else:
-                    # y is row, x is col
                     x += dir[d][0]
                     y += dir[d][1]
                     x %= self.thisLevel.lvlWidth
                     y %= self.thisLevel.lvlHeight
                     tile = self.thisLevel.GetMapTile((y, x))
                     if any(x == g[0] and y == g[1] for g in gxy):
-                        vision.append(-2)
+                        vision[index] = -2
                     elif any(x == g[0] and y == g[1] for g in vxy):
-                        vision.append(3)
+                        vision[index] = 3
                     elif self.thisFruit.active and fx == x and fy == y:
-                        vision.append(4)
+                        vision[index] = 4
                     elif tile == 0 or tile == doorh or tile == doorv:
-                        vision.append(0)
+                        vision[index] = 0
                     elif tile == pel:
-                        vision.append(1)
+                        vision[index] = 1
                     elif tile == ppel:
-                        vision.append(2)
+                        vision[index] = 2
                     else:
-                        vision.append(-1)
+                        vision[index] = -1
                         blocked = True
 
         done = self.thisGame.mode == 2 or self.thisGame.mode == 6

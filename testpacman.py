@@ -1,4 +1,5 @@
 import random
+from sys import exit
 
 from gym_pacman.envs.pacman_env import PacmanEnv
 from gym_pacman.pacman import *
@@ -15,6 +16,10 @@ pacman = PacmanEnv(gui=True, randomized=True)
 direc = 0
 
 while True:
+    # Keep window from complaining unresponsive
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit(0)
     pacman.render()
     _, _, done, info = pacman.step(direc)
     clock.tick(40)

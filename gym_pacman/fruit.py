@@ -2,7 +2,7 @@ from .pacman import *
 
 
 class Fruit:
-    def __init__(self, gui=False):
+    def __init__(self):
         # when fruit is not in use, it's in the (-1, -1) position off-screen.
         self.slowTimer = 0
         self.x = -TILE_WIDTH
@@ -19,16 +19,19 @@ class Fruit:
         self.nearestCol = (-1, -1)
 
         self.imFruit = {}
-        if gui:
-            for i in range(0, 5, 1):
-                self.imFruit[i] = get_image_surface(
-                    os.path.join(SCRIPT_PATH, "res", "sprite",
-                                 "fruit " + str(i) + ".gif"))
 
         self.currentPath = ""
         self.fruitType = 1
 
+        self.gui = False
+
     def Draw(self, thisGame, screen):
+        if not self.gui:
+            for i in range(0, 5, 1):
+                self.imFruit[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "fruit " + str(i) + ".gif"))
+            self.gui = True
         if thisGame.mode == 3 or self.active is False:
             return False
 

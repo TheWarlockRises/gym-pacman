@@ -42,8 +42,6 @@ JS_XAXIS = 0  # axis 0 for left/right (default for most joysticks)
 JS_YAXIS = 1  # axis 1 for up/down (default for most joysticks)
 JS_STARTBUTTON = 0  # button number to start the game. this is a matter of personal preference, and will vary from device to device
 
-rect_list = []  # rect list for drawing
-
 img_Background = None
 
 

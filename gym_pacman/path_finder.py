@@ -232,7 +232,6 @@ class path_finder:
         return self.map[self.Unfold((row, col))].parent
 
     def draw(self, screen, tileIDImage):
-        global rect_list
         for row in range(0, self.size[0], 1):
             for col in range(0, self.size[1], 1):
                 thisTile = self.GetType((row, col))

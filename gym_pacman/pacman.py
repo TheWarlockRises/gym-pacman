@@ -2,7 +2,7 @@ from .consts import *
 
 
 class Pacman:
-    def __init__(self, gui=False):
+    def __init__(self):
         self.x = 0
         self.y = 0
         self.velX = 0
@@ -27,24 +27,8 @@ class Pacman:
         self.prev_velx = 0
         self.prev_vely = 0
 
-        if gui:
-            for i in range(1, 9, 1):
-                self.anim_pacmanL[i] = get_image_surface(
-                    os.path.join(SCRIPT_PATH, "res", "sprite",
-                                 "pacman-l " + str(i) + ".gif"))
-                self.anim_pacmanR[i] = get_image_surface(
-                    os.path.join(SCRIPT_PATH, "res", "sprite",
-                                 "pacman-r " + str(i) + ".gif"))
-                self.anim_pacmanU[i] = get_image_surface(
-                    os.path.join(SCRIPT_PATH, "res", "sprite",
-                                 "pacman-u " + str(i) + ".gif"))
-                self.anim_pacmanD[i] = get_image_surface(
-                    os.path.join(SCRIPT_PATH, "res", "sprite",
-                                 "pacman-d " + str(i) + ".gif"))
-                self.anim_pacmanS[i] = get_image_surface(
-                    os.path.join(SCRIPT_PATH, "res", "sprite", "pacman.gif"))
-
         self.pelletSndNum = 0
+        self.gui = False
 
     def Move(self, thisLevel, ghosts, thisGame, path, thisFruit, tileID):
         self.nearestRow = int(((self.y + (TILE_WIDTH / 2)) / TILE_WIDTH))
@@ -169,9 +153,25 @@ class Pacman:
         return score
 
     def Draw(self, thisGame, screen):
-        global rect_list
         if thisGame.mode == 3:
             return False
+        elif not self.gui:
+            for i in range(1, 9, 1):
+                self.anim_pacmanL[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "pacman-l " + str(i) + ".gif"))
+                self.anim_pacmanR[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "pacman-r " + str(i) + ".gif"))
+                self.anim_pacmanU[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "pacman-u " + str(i) + ".gif"))
+                self.anim_pacmanD[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite",
+                                 "pacman-d " + str(i) + ".gif"))
+                self.anim_pacmanS[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "sprite", "pacman.gif"))
+            self.gui = True
 
         # set the current frame array to match the direction pacman is facing
         if self.velX > 0:
@@ -226,7 +226,7 @@ def GetCrossRef(tileIDName, tileID):
     f.close()
 
 
-def GetImageCrossRef(tileIDName, tileID, tileIDImage, thisLevel):
+def GetImageCrossRef(tileIDImage, thisLevel):
     f = open(os.path.join(SCRIPT_PATH, "res", "crossref.txt"), 'r')
 
     lineNum = 0
@@ -248,9 +248,6 @@ def GetImageCrossRef(tileIDName, tileID, tileIDImage, thisLevel):
             useLine = True
 
         if useLine:
-            tileIDName[int(str_splitBySpace[0])] = str_splitBySpace[1]
-            tileID[str_splitBySpace[1]] = int(str_splitBySpace[0])
-
             thisID = int(str_splitBySpace[0])
             if not thisID in NO_GIF_TILES:
                 tileIDImage[thisID] = get_image_surface(

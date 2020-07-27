@@ -4,7 +4,7 @@ from .pacman import *
 
 
 class level:
-    def __init__(self, gui=False, randomized=False):
+    def __init__(self, randomized=False):
         self.lvlWidth = 0
         self.lvlHeight = 0
         self.edgeLightColor = (255, 255, 0, 255)
@@ -17,7 +17,7 @@ class level:
         self.pellets = 0
         self.powerPelletBlinkTimer = 0
 
-        self.gui = gui
+        self.gui = False
         self.randomized = randomized
 
     def SetMapTile(self, row_col, newValue):
@@ -211,7 +211,10 @@ class level:
                 outputLine += str(self.GetMapTile((row, col))) + ", "
 
     def DrawMap(self, thisGame, tileID, screen, tileIDImage):
-        global rect_list
+        if not self.gui:
+            GetImageCrossRef(tileIDImage, self)
+            self.gui = True
+
         self.powerPelletBlinkTimer += 1
         if self.powerPelletBlinkTimer == 40:
             self.powerPelletBlinkTimer = 0
@@ -371,11 +374,7 @@ class level:
                     rowNum += 1
         f.close()
         # reload all tiles and set appropriate colors
-        # TODO: Determine where to call GetCrossRef()
-        if self.gui:
-            GetImageCrossRef(tileIDName, tileID, tileIDImage, self)
-        else:
-            GetCrossRef(tileIDName, tileID)
+        GetCrossRef(tileIDName, tileID)
 
         # load map into the pathfinder object
         path.ResizeMap((self.lvlHeight, self.lvlWidth))

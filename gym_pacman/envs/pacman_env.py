@@ -1,11 +1,13 @@
+from sys import exit
+
 import gym
-import numpy as np
 
 from ..fruit import *
 from ..game import *
 from ..ghost import *
 from ..level import *
 from ..path_finder import *
+from ..sensor import *
 
 
 # game "mode" variable
@@ -22,22 +24,20 @@ from ..path_finder import *
 # 10 = blank screen before changing levels
 # TODO: Skip over pause frames (e.g. pause when ghost eaten)
 
+
 class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, gui=False, randomized=False, sensor_range=10,
-                 sound=False):
-        self.gui = gui
-        self.sensor_range = sensor_range
+    def __init__(self, invincible=False, randomized=False,
+                 sensor=sensor_1d(10), sound=False):
+        # OpenAI variables
+        self.gui = False
+        self.invincible = invincible
+        self.sensor = sensor
         self.sound = sound
 
-        if gui:
-            pygame.display.set_mode((1, 1))
-            pygame.display.set_caption("Pacman")
-            init_pygame()
-
         # create the pacman
-        self.player = Pacman(gui)
+        self.player = Pacman()
 
         # create a path_finder object
         self.path = path_finder()
@@ -46,10 +46,10 @@ class PacmanEnv(gym.Env):
         self.ghosts = {}
         for i in range(0, 6, 1):
             # remember, ghost[4] is the blue, vulnerable ghost
-            self.ghosts[i] = Ghost(i, gui)
+            self.ghosts[i] = Ghost(i)
 
         # create piece of fruit
-        self.thisFruit = Fruit(gui)
+        self.thisFruit = Fruit()
 
         self.tileIDName = {}  # gives tile name (when the ID# is known)
         self.tileID = {}  # gives tile ID (when the name is known)
@@ -59,17 +59,16 @@ class PacmanEnv(gym.Env):
         self.oldFillColor = None
 
         # create game and level objects and load first level
-        self.thisGame = Game(gui)
-        self.thisLevel = level(gui, randomized)
+        self.thisGame = Game()
+        self.thisLevel = level(randomized)
 
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
                                    self.path, self.tileID, self.tileIDName,
                                    self.tileIDImage)
 
-        if gui:
-            pygame.display.set_mode(self.thisGame.screenSize)
-            self.screen = pygame.display.get_surface()
+        # Rendering Variables
+        self.screen = None
 
     def check_inputs(self, action):
         if action == 0 and not self.thisLevel.CheckIfHitWall(
@@ -94,13 +93,11 @@ class PacmanEnv(gym.Env):
             self.player.velY = self.player.speed
 
     def step(self, action):
-        # normal gameplay mode
-        # CheckInputs()
-        # TODO: Use action param to control player.
+        # Use action param to control player.
         self.check_inputs(action)
         self.thisGame.modeTimer += 1
 
-        # TODO: Need to extract observations from entity Move functions.
+        # Extract observations from entity Move functions.
         score = self.player.Move(self.thisLevel, self.ghosts, self.thisGame,
                                  self.path, self.thisFruit, self.tileID)
         for i in range(0, 4, 1):
@@ -108,82 +105,39 @@ class PacmanEnv(gym.Env):
                                 self.tileID)
         self.thisFruit.Move(self.thisGame)
 
-        # TODO: Set observations, reward, etc.
-        vision = [0] * (self.sensor_range * 4 + 1)
-        dir = ((1, 0), (0, -1), (-1, 0), (0, 1))
-        doorh = self.tileID["door-h"]
-        doorv = self.tileID["door-v"]
-        pel = self.tileID["pellet"]
-        ppel = self.tileID["pellet-power"]
-        x = self.player.nearestCol
-        y = self.player.nearestRow
-        fx = self.thisFruit.nearestCol
-        fy = self.thisFruit.nearestRow
-        gxy = list((g.nearestCol, g.nearestRow) for g in
-                   filter(lambda g: g.state == 1, self.ghosts.values()))
-        vxy = list((g.nearestCol, g.nearestRow) for g in
-                   filter(lambda g: g.state == 2, self.ghosts.values()))
-        tile = self.thisLevel.GetMapTile((y, x))
-        if any(x == g[0] and y == g[1] for g in gxy):
-            vision[0] = -1
-        elif any(x == g[0] and y == g[1] for g in vxy):
-            vision[0] = 4
-        elif self.thisFruit.active and fx == x and fy == y:
-            vision[0] = 5
-        elif tile == 0 or tile == doorh or tile == doorv:
-            vision[0] = 1
-        elif tile == pel:
-            vision[0] = 2
-        elif tile == ppel:
-            vision[0] = 3
-        else:
-            vision[0] = -1
+        observation = self.sensor(self)
 
-        for d in range(4):
-            blocked = False
-            x = self.player.nearestCol
-            y = self.player.nearestRow
-            for r in range(self.sensor_range):
-                index = r * 4 + d + 1
-                if blocked:
-                    continue
-                else:
-                    x += dir[d][0]
-                    y += dir[d][1]
-                    x %= self.thisLevel.lvlWidth
-                    y %= self.thisLevel.lvlHeight
-                    tile = self.thisLevel.GetMapTile((y, x))
-                    if any(x == g[0] and y == g[1] for g in gxy):
-                        vision[index] = -1
-                    elif any(x == g[0] and y == g[1] for g in vxy):
-                        vision[index] = 4
-                    elif self.thisFruit.active and fx == x and fy == y:
-                        vision[index] = 5
-                    elif tile == 0 or tile == doorh or tile == doorv:
-                        vision[index] = 1
-                    elif tile == pel:
-                        vision[index] = 2
-                    elif tile == ppel:
-                        vision[index] = 3
-                    else:
-                        blocked = True
-
+        if self.invincible and self.thisGame.mode == 2:
+            self.thisGame.mode = 1
         done = self.thisGame.mode == 2 or self.thisGame.mode == 6
-        return np.array(vision), score, done, {"pacmanx": self.player.velX,
-                                               "pacmany": self.player.velY}
+        # TODO: Return number of frames to pause for sound FX
+        return observation, score, done, {"pacmanx": self.player.velX,
+                                          "pacmany": self.player.velY}
 
     def reset(self):
         # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost
         # the static method CheckIfHitSomething() in lines 108-111 of level.py regards obtaining all pellets
+        self.thisLevel.gui = False  # Get renderer to call crossref again.
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
                                    self.path, self.tileID, self.tileIDName,
                                    self.tileIDImage)
-        pass
 
     def render(self, mode="human"):
         if not self.gui:
-            return
+            pygame.display.set_mode((1, 1))
+            pygame.display.set_caption("Pacman")
+            init_pygame()
+            pygame.display.set_mode(self.thisGame.screenSize)
+            self.screen = pygame.display.get_surface()
+            for g in self.ghosts.values():
+                g.init_pygame()
+            self.gui = True
+
+        # Keep Windows from calling window unresponsive.
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit(0)
 
         self.thisGame.SmartMoveScreen(self.player, self.thisLevel,
                                       self.thisGame)

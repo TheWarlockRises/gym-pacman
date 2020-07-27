@@ -3,7 +3,7 @@ import random
 
 
 class Game:
-    def __init__(self, gui=False):
+    def __init__(self):
         self.levelNum = 0
         self.score = 0
         self.lives = 0
@@ -32,19 +32,12 @@ class Game:
 
         # numerical display digits
         self.digit = {}
-        if gui:
-            for i in range(0, 10, 1):
-                self.digit[i] = get_image_surface(
-                    os.path.join(SCRIPT_PATH, "res", "text", str(i) + ".gif"))
-            self.imLife = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "text", "life.gif"))
-            self.imGameOver = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "text", "gameover.gif"))
-            self.imReady = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "text", "ready.gif"))
-            self.imLogo = get_image_surface(
-                os.path.join(SCRIPT_PATH, "res", "text", "logo.gif"))
-            self.imHiscores = self.makehiscorelist()
+        self.gui = False
+        self.imLife = None
+        self.imGameOver = None
+        self.imReady = None
+        self.imLogo = None
+        self.imHiscores = None
 
     @staticmethod
     def defaulthiscorelist():
@@ -121,7 +114,6 @@ class Game:
         self.writehiscores(hs)
 
     def makehiscorelist(self):
-        global rect_list
         "Read the High-Score file and convert it to a useable Surface."
         # My apologies for all the hard-coded constants.... -Andy
         f = pygame.font.Font(os.path.join(SCRIPT_PATH, "res", "zig_____.ttf"),
@@ -145,14 +137,12 @@ class Game:
 
     def StartNewGame(self, thisLevel, thisGame, thisFruit, player, ghosts,
                      path, tileID, tileIDName, tileIDImage):
-        self.levelNum = 1
+        self.levelNum = random.randrange(1, 11)
         self.score = 0
         self.lives = 3
 
-        levelNum = random.randrange(1, 10)
-
         self.SetMode(1)
-        thisLevel.LoadLevel(levelNum, thisFruit, player, ghosts,
+        thisLevel.LoadLevel(self.levelNum, thisFruit, player, ghosts,
                             path, thisGame, tileID, tileIDName, tileIDImage)
 
     def AddToScore(self, amount, thisGame):
@@ -166,7 +156,19 @@ class Game:
         self.score += amount
 
     def DrawScore(self, screen, thisFruit):
-        global rect_list
+        if not self.gui:
+            for i in range(0, 10, 1):
+                self.digit[i] = get_image_surface(
+                    os.path.join(SCRIPT_PATH, "res", "text", str(i) + ".gif"))
+            self.imLife = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "text", "life.gif"))
+            self.imGameOver = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "text", "gameover.gif"))
+            self.imReady = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "text", "ready.gif"))
+            self.imLogo = get_image_surface(
+                os.path.join(SCRIPT_PATH, "res", "text", "logo.gif"))
+            self.imHiscores = self.makehiscorelist()
         self.DrawNumber(self.score,
                         (SCORE_XOFFSET, self.screenSize[1] - SCORE_YOFFSET),
                         screen)
@@ -189,7 +191,6 @@ class Game:
         self.DrawNumber(self.levelNum, (0, self.screenSize[1] - 20), screen)
 
     def DrawNumber(self, number, x_y, screen):
-        global rect_list
         (x, y) = x_y
 
         strNumber = str(number)

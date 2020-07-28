@@ -1,4 +1,5 @@
 import random
+from math import copysign
 
 from .pacman import *
 
@@ -147,7 +148,20 @@ class Ghost:
             # if the ghost is lined up with the grid again
             # meaning, it's time to go to the next path item
 
-            if self.currentPath is not False and (len(self.currentPath) > 0):
+            # For training purposes: If player is invincible, align self to
+            # player before finding next path so wall clipping doesn't happen.
+            if self.state == 1 and self.nearestCol == player.nearestCol and \
+                    self.nearestRow == player.nearestRow:
+                self.currentPath = False
+                self.velX = 0
+                self.velY = 0
+                if player.x != self.x:
+                    self.velX = copysign(self.speed, int(player.x - self.x))
+                elif player.y != self.y:
+                    self.velY = copysign(self.speed, int(player.y - self.y))
+
+            # if self.currentPath is not False and (len(self.currentPath) > 0):
+            elif self.currentPath is not False and len(self.currentPath) > 0:
                 self.currentPath = self.currentPath[1:]
                 self.FollowNextPathWay(path, player, thisLevel, tileID)
 

@@ -87,7 +87,7 @@ class level:
 
     @staticmethod
     def CheckIfHitSomething(playerX_playerY, row_col, thisLevel, tileID,
-                            player, thisGame, ghosts):
+                            player, thisGame, ghosts, scorer):
         (playerX, playerY) = playerX_playerY
         (row, col) = row_col
         for iRow in range(row - 1, row + 2, 1):
@@ -109,13 +109,14 @@ class level:
                         thisLevel.pellets -= 1
 
                         thisGame.AddToScore(10, thisGame)
+                        scorer.score_pellet_eat()
 
                         if thisLevel.pellets == 0:
                             # no more pellets left!
                             # WON THE LEVEL
-                            thisGame.SetMode(6)
-                            return 9999
-                        return 10
+                            if thisGame.mode != 6:
+                                thisGame.SetMode(6)
+                                scorer.score_level_finished()
 
                     elif result == tileID['pellet-power']:
                         # got a power pellet
@@ -124,16 +125,17 @@ class level:
                         # snd_powerpellet.play()
 
                         thisGame.AddToScore(100, thisGame)
+                        scorer.score_power_pellet_eat()
                         thisGame.ghostValue = 200
 
                         thisGame.ghostTimer = 360
                         for i in range(0, 4, 1):
                             if ghosts[i].state == 1:
                                 ghosts[i].state = 2
-                        return 100
 
                     elif result == tileID['door-h']:
                         # ran into a horizontal door
+                        scorer.score_door_entry()
                         for i in range(0, thisLevel.lvlWidth, 1):
                             if not i == iCol:
                                 if thisLevel.GetMapTile((iRow, i)) == tileID[
@@ -147,6 +149,7 @@ class level:
 
                     elif result == tileID['door-v']:
                         # ran into a vertical door
+                        scorer.score_door_entry()
                         for i in range(0, thisLevel.lvlHeight, 1):
                             if not i == iRow:
                                 if thisLevel.GetMapTile((i, iCol)) == tileID[

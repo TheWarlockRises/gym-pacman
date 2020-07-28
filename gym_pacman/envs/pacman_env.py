@@ -7,6 +7,7 @@ from ..game import *
 from ..ghost import *
 from ..level import *
 from ..path_finder import *
+from ..scorer import *
 from ..sensor import *
 
 
@@ -29,10 +30,11 @@ class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
     def __init__(self, invincible=False, randomized=False,
-                 sensor=sensor_1d_4(10), sound=False):
+                 scorer=Scorer(), sensor=sensor_1d_4(10), sound=False):
         # OpenAI variables
         self.gui = False
         self.invincible = invincible
+        self.scorer = scorer
         self.sensor = sensor
         self.sound = sound
 
@@ -98,8 +100,10 @@ class PacmanEnv(gym.Env):
         self.thisGame.modeTimer += 1
 
         # Extract observations from entity Move functions.
-        score = self.player.Move(self.thisLevel, self.ghosts, self.thisGame,
-                                 self.path, self.thisFruit, self.tileID)
+        self.scorer.reset()
+        self.player.Move(self.thisLevel, self.ghosts, self.thisGame, self.path,
+                         self.thisFruit, self.tileID, self.scorer)
+
         for i in range(0, 4, 1):
             self.ghosts[i].Move(self.path, self.player, self.thisLevel,
                                 self.tileID)
@@ -111,8 +115,8 @@ class PacmanEnv(gym.Env):
             self.thisGame.mode = 1
         done = self.thisGame.mode == 2 or self.thisGame.mode == 6
         # TODO: Return number of frames to pause for sound FX
-        return observation, score, done, {"pacmanx": self.player.velX,
-                                          "pacmany": self.player.velY}
+        return observation, self.scorer.get_score(), done, {
+            "pacmanx": self.player.velX, "pacmany": self.player.velY}
 
     def reset(self):
         # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost

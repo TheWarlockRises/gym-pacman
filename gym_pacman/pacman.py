@@ -30,32 +30,26 @@ class Pacman:
         self.pelletSndNum = 0
         self.gui = False
 
-    def Move(self, thisLevel, ghosts, thisGame, path, thisFruit, tileID):
+    def Move(self, thisLevel, ghosts, thisGame, path, thisFruit, tileID,
+             scorer):
         self.nearestRow = int(((self.y + (TILE_WIDTH / 2)) / TILE_WIDTH))
         self.nearestCol = int(((self.x + (TILE_HEIGHT / 2)) / TILE_HEIGHT))
-        score = 1
 
-        # make sure the current velocity will not cause a collision before moving
+        # make sure the current velocity will not cause a collision
+        # before moving
         if not thisLevel.CheckIfHitWall(
                 (self.x + self.velX, self.y + self.velY),
                 (self.nearestRow, self.nearestCol)):
             # it's ok to Move
             self.x += self.velX
             self.y += self.velY
-
-            # TODO: Score penalties for changing directions.
-            if self.prev_velx != self.velX:
-                score -= 1
-            if self.prev_vely != self.velY:
-                score -= 1
+            scorer.score_movement(self)
 
             # check for collisions with other tiles (pellets, etc)
-            score += thisLevel.CheckIfHitSomething((self.x, self.y),
-                                                   (self.nearestRow,
-                                                    self.nearestCol),
-                                                   thisLevel, tileID, self,
-                                                   thisGame,
-                                                   ghosts)
+            thisLevel.CheckIfHitSomething((self.x, self.y),
+                                          (self.nearestRow, self.nearestCol),
+                                          thisLevel, tileID, self, thisGame,
+                                          ghosts, scorer)
 
             # check for collisions with the ghosts
             for i in range(0, 4, 1):
@@ -67,7 +61,7 @@ class Pacman:
                     if ghosts[i].state == 1:
                         # ghost is normal
                         if thisGame.mode != 2:
-                            score -= 9999
+                            scorer.score_ghost_hit()
                         thisGame.SetMode(2)
 
                     elif ghosts[i].state == 2:
@@ -75,7 +69,7 @@ class Pacman:
                         # give them glasses
                         # make them run
                         thisGame.AddToScore(thisGame.ghostValue, thisGame)
-                        score += thisGame.ghostValue
+                        scorer.score_ghost_eat()
                         thisGame.ghostValue = thisGame.ghostValue * 2
                         # snd_eatgh.play()
 
@@ -100,7 +94,7 @@ class Pacman:
                                         (thisFruit.x, thisFruit.y),
                                         TILE_WIDTH / 2):
                     thisGame.AddToScore(2500, thisGame)
-                    score += 2500
+                    scorer.score_fruit_eat()
                     thisFruit.active = False
                     thisGame.fruitTimer = 0
                     thisGame.fruitScoreTimer = 80
@@ -110,7 +104,7 @@ class Pacman:
             # we're going to hit a wall -- stop moving
             self.velX = 0
             self.velY = 0
-            score = 0
+            scorer.score_wall_hit()
 
         self.prev_velx = self.velX
         self.prev_vely = self.velY
@@ -149,8 +143,6 @@ class Pacman:
 
         if thisGame.fruitScoreTimer > 0:
             thisGame.fruitScoreTimer -= 1
-
-        return score
 
     def Draw(self, thisGame, screen):
         if thisGame.mode == 3:

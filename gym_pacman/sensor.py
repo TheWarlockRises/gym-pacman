@@ -15,23 +15,28 @@ def get_tile_info(env):
     return door_h, door_v, pel, p_pel, fx, fy, gxy, vxy
 
 
-def sensor_1d_1(sensor_range):
+def sensor_1d_1(sensor_range, view=None):
     def sensor(env):
         pass
 
     return sensor
 
 
-def sensor_1d_2(sensor_range):
+def sensor_1d_2(sensor_range, view=None):
     def sensor(env):
         pass
 
     return sensor
 
 
-def sensor_1d_4(sensor_range):
+def sensor_1d_4(sensor_range, view=None):
+    if view is not None:
+        view = max(sensor_range, view)
+    else:
+        view = sensor_range
+
     def sensor(env):
-        vision = [0] * sensor_range * 4
+        vision = [0] * view * 4
         dirs = ((1, 0), (0, -1), (-1, 0), (0, 1))
         door_h, door_v, pel, p_pel, fx, fy, gxy, vxy = get_tile_info(env)
 
@@ -39,7 +44,7 @@ def sensor_1d_4(sensor_range):
             x = env.player.nearestCol
             y = env.player.nearestRow
             for r in range(sensor_range):
-                index = d * sensor_range + r
+                index = 4 * d * r
                 x %= env.thisLevel.lvlWidth
                 y %= env.thisLevel.lvlHeight
                 tile = env.thisLevel.GetMapTile((y, x))
@@ -64,7 +69,7 @@ def sensor_1d_4(sensor_range):
     return sensor
 
 
-def sensor_2d(sensor_range):
+def sensor_2d(sensor_range, view=None):
     def sensor(env):
         pass
 

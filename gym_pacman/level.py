@@ -1,6 +1,7 @@
 import random
 
 from .pacman import *
+from re import split
 
 
 class level:
@@ -274,7 +275,9 @@ class level:
                     line[-1] == "\n" or line[-1] == "\r"): line = line[:-1]
             while len(line) > 0 and (
                     line[0] == "\n" or line[0] == "\r"): line = line[1:]
-            str_splitBySpace = line.split(' ')
+            # str_splitBySpace = line.split(' ')
+            # TODO: Check if whitespace split is fine.
+            str_splitBySpace = split("\\s+", line)
 
             j = str_splitBySpace[0]
 

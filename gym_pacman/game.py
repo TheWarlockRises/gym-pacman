@@ -137,7 +137,7 @@ class Game:
 
     def StartNewGame(self, thisLevel, thisGame, thisFruit, player, ghosts,
                      path, tileID, tileIDName, tileIDImage):
-        self.levelNum = random.randrange(1, 11)
+        self.levelNum = random.randrange(0, 11)
         self.score = 0
         self.lives = 3
 

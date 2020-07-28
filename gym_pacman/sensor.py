@@ -1,20 +1,39 @@
 from numpy import array
 
 
-def sensor_1d(sensor_range):
-    def default_sensor(env):
+def get_tile_info(env):
+    door_h = env.tileID["door-h"]
+    door_v = env.tileID["door-v"]
+    pel = env.tileID["pellet"]
+    p_pel = env.tileID["pellet-power"]
+    fx = env.thisFruit.nearestCol
+    fy = env.thisFruit.nearestRow
+    gxy = list((g.nearestCol, g.nearestRow) for g in
+               filter(lambda g: g.state == 1, env.ghosts.values()))
+    vxy = list((g.nearestCol, g.nearestRow) for g in
+               filter(lambda g: g.state == 2, env.ghosts.values()))
+    return door_h, door_v, pel, p_pel, fx, fy, gxy, vxy
+
+
+def sensor_1d_1(sensor_range):
+    def sensor(env):
+        pass
+
+    return sensor
+
+
+def sensor_1d_2(sensor_range):
+    def sensor(env):
+        pass
+
+    return sensor
+
+
+def sensor_1d_4(sensor_range):
+    def sensor(env):
         vision = [0] * sensor_range * 4
         dirs = ((1, 0), (0, -1), (-1, 0), (0, 1))
-        door_h = env.tileID["door-h"]
-        door_v = env.tileID["door-v"]
-        pel = env.tileID["pellet"]
-        p_pel = env.tileID["pellet-power"]
-        fx = env.thisFruit.nearestCol
-        fy = env.thisFruit.nearestRow
-        gxy = list((g.nearestCol, g.nearestRow) for g in
-                   filter(lambda g: g.state == 1, env.ghosts.values()))
-        vxy = list((g.nearestCol, g.nearestRow) for g in
-                   filter(lambda g: g.state == 2, env.ghosts.values()))
+        door_h, door_v, pel, p_pel, fx, fy, gxy, vxy = get_tile_info(env)
 
         for d in range(4):
             x = env.player.nearestCol
@@ -42,4 +61,11 @@ def sensor_1d(sensor_range):
                 y += dirs[d][1]
         return array(vision)
 
-    return default_sensor
+    return sensor
+
+
+def sensor_2d(sensor_range):
+    def sensor(env):
+        pass
+
+    return sensor

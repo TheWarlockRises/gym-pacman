@@ -30,7 +30,7 @@ class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
     def __init__(self, invincible=False, randomized=False,
-                 scorer=Scorer(), sensor=sensor_1d_4(10), sound=False):
+                 scorer=BasicScorer(), sensor=sensor_1d_4(10), sound=False):
         # OpenAI variables
         self.gui = False
         self.invincible = invincible

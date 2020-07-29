@@ -404,11 +404,17 @@ class level:
             ghosts[i].x = ghosts[i].homeX
             ghosts[i].y = ghosts[i].homeY
             if self.randomized:
-                (randRow, randCol) = (0, 0)
-                while not self.GetMapTile((randRow, randCol)) == tileID[
-                    'pellet'] or (randRow, randCol) == (0, 0):
+                # (randRow, randCol) = (0, 0)
+                # while not self.GetMapTile((randRow, randCol)) == tileID[
+                # 'pellet'] or (randRow, randCol) == (0, 0):
+                while True:
                     randRow = random.randint(1, self.lvlHeight - 2)
                     randCol = random.randint(1, self.lvlWidth - 2)
+                    tile = self.GetMapTile((randRow, randCol))
+                    if tile == tileID["ghost-door"] or \
+                            tile == tileID["pellet"] or \
+                            tile == tileID["pellet-power"]:
+                        break
                 ghosts[i].x = randCol * TILE_WIDTH
                 ghosts[i].y = randRow * TILE_HEIGHT
             ghosts[i].velX = 0
@@ -438,11 +444,15 @@ class level:
         player.x = player.homeX
         player.y = player.homeY
         if self.randomized:
-            (randRow, randCol) = (0, 0)
-            while not self.GetMapTile((randRow, randCol)) == tileID[
-                'pellet'] or (randRow, randCol) == (0, 0):
+            # (randRow, randCol) = (0, 0)
+            # while not self.GetMapTile((randRow, randCol)) == tileID[
+            # 'pellet'] or (randRow, randCol) == (0, 0):
+            while True:
                 randRow = random.randint(1, self.lvlHeight - 2)
                 randCol = random.randint(1, self.lvlWidth - 2)
+                tile = self.GetMapTile((randRow, randCol))
+                if tile == tileID["pellet"] or tile == tileID["pellet-power"]:
+                    break
             player.x = randCol * TILE_WIDTH
             player.y = randRow * TILE_HEIGHT
 

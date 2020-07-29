@@ -1,4 +1,4 @@
-from numpy import array
+from numpy import zeros
 
 
 def get_tile_info(env):
@@ -36,7 +36,7 @@ def sensor_1d_4(sensor_range, view=None):
         view = sensor_range
 
     def sensor(env):
-        vision = [0] * view * 4
+        vision = zeros(view * 4, dtype=int)
         dirs = ((1, 0), (0, -1), (-1, 0), (0, 1))
         door_h, door_v, pel, p_pel, fx, fy, gxy, vxy = get_tile_info(env)
 
@@ -44,7 +44,7 @@ def sensor_1d_4(sensor_range, view=None):
             x = env.player.nearestCol
             y = env.player.nearestRow
             for r in range(sensor_range):
-                index = 4 * d * r
+                index = 4 * r + d
                 x %= env.thisLevel.lvlWidth
                 y %= env.thisLevel.lvlHeight
                 tile = env.thisLevel.GetMapTile((y, x))
@@ -64,7 +64,7 @@ def sensor_1d_4(sensor_range, view=None):
                     break
                 x += dirs[d][0]
                 y += dirs[d][1]
-        return array(vision)
+        return vision
 
     return sensor
 

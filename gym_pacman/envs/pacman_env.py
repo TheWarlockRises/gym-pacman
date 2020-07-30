@@ -1,6 +1,7 @@
 from sys import exit
 
 import gym
+from gym.spaces import Discrete
 
 from ..fruit import *
 from ..game import *
@@ -31,11 +32,15 @@ class PacmanEnv(gym.Env):
 
     def __init__(self, invincible=False, randomized=False,
                  scorer=BasicScorer(), sensor=sensor_1d_4(10), sound=False):
-        # OpenAI variables
+        # OpenAI Variables
+        self.action_space = Discrete(4)
+        self.observation_space = sensor[1]
+
+        # Pac-Man Variables
         self.gui = False
         self.invincible = invincible
         self.scorer = scorer
-        self.sensor = sensor
+        self.sensor = sensor[0]
         self.sound = sound
 
         # create the pacman
@@ -126,6 +131,7 @@ class PacmanEnv(gym.Env):
                                    self.thisFruit, self.player, self.ghosts,
                                    self.path, self.tileID, self.tileIDName,
                                    self.tileIDImage)
+        return self.sensor(self)
 
     def render(self, mode="human"):
         if not self.gui:

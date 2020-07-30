@@ -22,9 +22,17 @@ while True:
         if event.type == pygame.QUIT:
             exit(0)
     pacman.render()
-    _, _, done, info = pacman.step(direc)
+    observation, _, done, info = pacman.step(direc)
     clock.tick(40)
-    if random.random() < 0.05 or info["pacmanx"] == 0 and info["pacmany"] == 0:
+    if random.random() < 0.05:
         direc = random.randint(0, 3)
+    elif info["pacmanx"] == 0 and info["pacmany"] == 0:
+        direc = random.randint(0, 3)
+        possible = []
+        for i in range(4):
+            if observation[1][i] > 0:
+                possible.append(i)
+        if len(possible) > 0:
+            direc = possible[random.randint(0, len(possible) - 1)]
     if done:
         pacman.reset()

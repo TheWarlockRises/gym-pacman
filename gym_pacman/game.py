@@ -143,7 +143,7 @@ class Game:
 
         self.SetMode(1)
         thisLevel.LoadLevel(self.levelNum, thisFruit, player, ghosts,
-                            path, thisGame, tileID, tileIDName, tileIDImage)
+                            path, thisGame, tileID, tileIDName)
 
     def AddToScore(self, amount, thisGame):
         extraLifeSet = [25000, 50000, 100000, 150000]

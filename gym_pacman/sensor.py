@@ -1,3 +1,4 @@
+from gym.spaces import Box
 from numpy import zeros
 
 
@@ -36,7 +37,7 @@ def sensor_1d_4(sensor_range, view=None):
         view = sensor_range
 
     def sensor(env):
-        vision = zeros(view * 4, dtype=int)
+        vision = zeros((view, 4), dtype=int)
         dirs = ((1, 0), (0, -1), (-1, 0), (0, 1))
         door_h, door_v, pel, p_pel, fx, fy, gxy, vxy = get_tile_info(env)
 
@@ -44,29 +45,28 @@ def sensor_1d_4(sensor_range, view=None):
             x = env.player.nearestCol
             y = env.player.nearestRow
             for r in range(sensor_range):
-                index = 4 * r + d
                 x %= env.thisLevel.lvlWidth
                 y %= env.thisLevel.lvlHeight
                 tile = env.thisLevel.GetMapTile((y, x))
                 if any(x == g[0] and y == g[1] for g in gxy):
-                    vision[index] = -1
+                    vision[r][d] = -1
                 elif any(x == g[0] and y == g[1] for g in vxy):
-                    vision[index] = 4
+                    vision[r][d] = 4
                 elif env.thisFruit.active and fx == x and fy == y:
-                    vision[index] = 5
+                    vision[r][d] = 5
                 elif tile == 0 or tile == door_h or tile == door_v:
-                    vision[index] = 1
+                    vision[r][d] = 1
                 elif tile == pel:
-                    vision[index] = 2
+                    vision[r][d] = 2
                 elif tile == p_pel:
-                    vision[index] = 3
+                    vision[r][d] = 3
                 else:
                     break
                 x += dirs[d][0]
                 y += dirs[d][1]
         return vision
 
-    return sensor
+    return sensor, Box(-1, 5, shape=(view, 4), dtype=int)
 
 
 def sensor_2d(sensor_range, view=None):

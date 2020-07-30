@@ -258,7 +258,7 @@ class level:
                             row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
 
     def LoadLevel(self, levelNum, thisFruit, player, ghosts, path,
-                  thisGame, tileID, tileIDName, tileIDImage):
+                  thisGame, tileID, tileIDName):
         self.map = {}
         self.pellets = 0
 

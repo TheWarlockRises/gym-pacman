@@ -136,7 +136,7 @@ class Game:
         self.imHiscores = self.makehiscorelist()
 
     def StartNewGame(self, thisLevel, thisGame, thisFruit, player, ghosts,
-                     path, tileID, tileIDName, tileIDImage):
+                     path, tileID, tileIDName):
         self.levelNum = random.randrange(0, 11)
         self.score = 0
         self.lives = 3

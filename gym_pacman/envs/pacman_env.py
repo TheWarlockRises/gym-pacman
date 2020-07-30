@@ -71,8 +71,7 @@ class PacmanEnv(gym.Env):
 
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
-                                   self.path, self.tileID, self.tileIDName,
-                                   self.tileIDImage)
+                                   self.path, self.tileID, self.tileIDName)
 
         # Rendering Variables
         self.screen = None
@@ -129,8 +128,7 @@ class PacmanEnv(gym.Env):
         self.thisLevel.gui = False  # Get renderer to call crossref again.
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
-                                   self.path, self.tileID, self.tileIDName,
-                                   self.tileIDImage)
+                                   self.path, self.tileID, self.tileIDName)
         return self.sensor(self)
 
     def render(self, mode="human"):

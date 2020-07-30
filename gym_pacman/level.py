@@ -1,7 +1,7 @@
 import random
+from re import split
 
 from .pacman import *
-from re import split
 
 
 class level:
@@ -20,6 +20,19 @@ class level:
 
         self.gui = False
         self.randomized = randomized
+
+        # TODO: Refactor entire level setup because this is definitely not OOP.
+        self.preload_width = {}
+        self.preload_height = {}
+        self.preload_edge_light = {}
+        self.preload_edge_shadow = {}
+        self.preload_fill = {}
+        self.preload_pellet_color = {}
+        self.preload_map = {}
+        self.preload_pellets = {}
+        self.preload_fruit_type = {}
+        self.preload_player_home = {}
+        self.preload_ghosts_home = {}
 
     def SetMapTile(self, row_col, newValue):
         (row, col) = row_col
@@ -259,6 +272,31 @@ class level:
 
     def LoadLevel(self, levelNum, thisFruit, player, ghosts, path,
                   thisGame, tileID, tileIDName):
+        levelNum = str(levelNum)
+        # TODO: Find better way to mitigate IO bottleneck.
+        if levelNum in self.preload_width:
+            self.lvlWidth = self.preload_width[levelNum]
+            self.lvlHeight = self.preload_height[levelNum]
+            self.edgeLightColor = self.preload_edge_light[levelNum]
+            self.edgeShadowColor = self.preload_edge_shadow[levelNum]
+            self.pelletColor = self.preload_pellet_color[levelNum]
+            self.fillColor = self.preload_fill[levelNum]
+            self.pelletColor = self.preload_pellet_color[levelNum]
+            self.map = self.preload_map[levelNum].copy()
+            self.pellets = self.preload_pellets[levelNum]
+            thisFruit.fruitType = self.preload_fruit_type[levelNum]
+            # load map into the pathfinder object
+            path.ResizeMap((self.lvlHeight, self.lvlWidth))
+            for row in range(0, path.size[0], 1):
+                for col in range(0, path.size[1], 1):
+                    if self.IsWall((row, col), self):
+                        path.SetType((row, col), 1)
+                    else:
+                        path.SetType((row, col), 0)
+            # do all the level-starting stuff
+            self.Restart(thisGame, player, ghosts, tileID, path, thisFruit)
+            return
+
         self.map = {}
         self.pellets = 0
 
@@ -333,6 +371,8 @@ class level:
                     self.pelletColor = (red, green, blue, 255)
 
                 elif firstWord == "fruittype":
+                    self.preload_fruit_type[levelNum] = int(
+                        str_splitBySpace[2])
                     thisFruit.fruitType = int(str_splitBySpace[2])
 
                 elif firstWord == "startleveldata":
@@ -393,6 +433,14 @@ class level:
                     path.SetType((row, col), 0)
 
         # do all the level-starting stuff
+        self.preload_width[levelNum] = self.lvlWidth
+        self.preload_height[levelNum] = self.lvlHeight
+        self.preload_edge_light[levelNum] = self.edgeLightColor
+        self.preload_edge_shadow[levelNum] = self.edgeShadowColor
+        self.preload_fill[levelNum] = self.fillColor
+        self.preload_pellet_color[levelNum] = self.pelletColor
+        self.preload_map[levelNum] = self.map.copy()
+        self.preload_pellets[levelNum] = self.pellets
         self.Restart(thisGame, player, ghosts, tileID, path, thisFruit)
 
     def Restart(self, thisGame, player, ghosts, tileID, path, thisFruit):

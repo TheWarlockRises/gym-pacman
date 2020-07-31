@@ -169,6 +169,7 @@ class Game:
             self.imLogo = get_image_surface(
                 os.path.join(SCRIPT_PATH, "res", "text", "logo.gif"))
             self.imHiscores = self.makehiscorelist()
+            self.gui = True
         self.DrawNumber(self.score,
                         (SCORE_XOFFSET, self.screenSize[1] - SCORE_YOFFSET),
                         screen)

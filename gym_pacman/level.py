@@ -285,6 +285,10 @@ class level:
             self.map = self.preload_map[levelNum].copy()
             self.pellets = self.preload_pellets[levelNum]
             thisFruit.fruitType = self.preload_fruit_type[levelNum]
+            player.homeX, player.homeY = self.preload_player_home[levelNum]
+            for i in range(4):
+                ghosts[i].homeX, ghosts[i].homeY = \
+                    self.preload_ghosts_home[levelNum][i]
             # load map into the pathfinder object
             path.ResizeMap((self.lvlHeight, self.lvlWidth))
             for row in range(0, path.size[0], 1):
@@ -298,6 +302,7 @@ class level:
             return
 
         self.map = {}
+        self.preload_ghosts_home[levelNum] = [(0, 0)] * 4
         self.pellets = 0
 
         f = open(
@@ -403,6 +408,8 @@ class level:
 
                             player.homeX = k * TILE_WIDTH
                             player.homeY = rowNum * TILE_HEIGHT
+                            self.preload_player_home[levelNum] = (
+                                player.homeX, player.homeY)
                             self.SetMapTile((rowNum, k), 0)
 
                         elif 10 <= thisID <= 13:
@@ -410,6 +417,8 @@ class level:
 
                             ghosts[thisID - 10].homeX = k * TILE_WIDTH
                             ghosts[thisID - 10].homeY = rowNum * TILE_HEIGHT
+                            self.preload_ghosts_home[levelNum][thisID - 10] = (
+                                k * TILE_WIDTH, rowNum * TILE_HEIGHT)
                             self.SetMapTile((rowNum, k), 0)
 
                         elif thisID == 2:

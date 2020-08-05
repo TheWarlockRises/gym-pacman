@@ -31,7 +31,7 @@ class Pacman:
         self.gui = False
 
     def Move(self, thisLevel, ghosts, thisGame, path, thisFruit, tileID,
-             scorer):
+             scorer, random):
         self.nearestRow = int(((self.y + (TILE_WIDTH / 2)) / TILE_WIDTH))
         self.nearestCol = int(((self.x + (TILE_HEIGHT / 2)) / TILE_HEIGHT))
 
@@ -83,7 +83,7 @@ class Pacman:
                                 thisLevel.GetGhostBoxPos(tileID)[0] + 1,
                                 thisLevel.GetGhostBoxPos(tileID)[1]))
                         ghosts[i].FollowNextPathWay(path, self, thisLevel,
-                                                    tileID)
+                                                    tileID, random)
 
                         # set game mode to brief pause after eating
                         # thisGame.SetMode(5)
@@ -123,7 +123,7 @@ class Pacman:
         # deal with fruit timer
         thisGame.fruitTimer += 1
         if thisGame.fruitTimer == 380:
-            pathwayPair = thisLevel.GetPathwayPairPos(tileID, thisLevel)
+            pathwayPair = thisLevel.GetPathwayPairPos(tileID, thisLevel, random)
 
             if not pathwayPair == False:
                 pathwayEntrance = pathwayPair[0]

@@ -1,7 +1,8 @@
 from sys import exit
 
 import gym
-from gym.spaces import Discrete
+from gym.spaces import Box, Discrete
+from gym.utils.seeding import np_random
 
 from ..fruit import *
 from ..game import *
@@ -30,17 +31,21 @@ from ..sensor import *
 class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, invincible=False, randomized=False,
+    def __init__(self, invincible=False, level=None, randomized=False,
                  scorer=BasicScorer(), sensor=sensor_1d_4(10), sound=False):
         # OpenAI Variables
+        self.action = 2
         self.action_space = Discrete(4)
-        self.observation_space = sensor[1]
+        self.observation_space = Box(-1, 5, shape=sensor(None).shape,
+                                     dtype=int)
+        self.random, _ = np_random(None)
 
         # Pac-Man Variables
         self.gui = False
         self.invincible = invincible
+        self.level = level
         self.scorer = scorer
-        self.sensor = sensor[0]
+        self.sensor = sensor
         self.sound = sound
 
         # create the pacman
@@ -67,16 +72,22 @@ class PacmanEnv(gym.Env):
 
         # create game and level objects and load first level
         self.thisGame = Game()
-        self.thisLevel = level(randomized)
+        self.thisLevel = Level(randomized)
 
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
-                                   self.path, self.tileID, self.tileIDName)
+                                   self.path, self.tileID, self.tileIDName,
+                                   self.random, self.level)
 
         # Rendering Variables
         self.screen = None
 
+    def seed(self, seed=None):
+        self.random, seed = np_random(seed)
+        return [seed]
+
     def check_inputs(self, action):
+        self.action = action
         if action == 0 and not self.thisLevel.CheckIfHitWall(
                 (self.player.x + self.player.speed, self.player.y),
                 (self.player.nearestRow, self.player.nearestCol)):
@@ -106,11 +117,11 @@ class PacmanEnv(gym.Env):
         # Extract observations from entity Move functions.
         self.scorer.reset()
         self.player.Move(self.thisLevel, self.ghosts, self.thisGame, self.path,
-                         self.thisFruit, self.tileID, self.scorer)
+                         self.thisFruit, self.tileID, self.scorer, self.random)
 
         for i in range(0, 4, 1):
             self.ghosts[i].Move(self.path, self.player, self.thisLevel,
-                                self.tileID)
+                                self.tileID, self.random)
         self.thisFruit.Move(self.thisGame)
 
         observation = self.sensor(self)
@@ -120,15 +131,20 @@ class PacmanEnv(gym.Env):
         done = self.thisGame.mode == 2 or self.thisGame.mode == 6
         # TODO: Return number of frames to pause for sound FX
         return observation, self.scorer.get_score(), done, {
-            "pacmanx": self.player.velX, "pacmany": self.player.velY}
+            "action": self.action, "pacmanx": self.player.velX,
+            "pacmany": self.player.velY}
 
     def reset(self):
-        # lines 125-127 in Move() in pacman.py regards running into a non-vulnerable ghost
-        # the static method CheckIfHitSomething() in lines 108-111 of level.py regards obtaining all pellets
+        # lines 125-127 in Move() in pacman.py regards running into a
+        # non-vulnerable ghost
+        # the static method CheckIfHitSomething() in lines 108-111 of level.py
+        # regards obtaining all pellets
         self.thisLevel.gui = False  # Get renderer to call crossref again.
+        self.action = 2  # Reset observation direction.
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
-                                   self.path, self.tileID, self.tileIDName)
+                                   self.path, self.tileID, self.tileIDName,
+                                   self.random, self.level)
         return self.sensor(self)
 
     def render(self, mode="human"):

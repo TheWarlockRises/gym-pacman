@@ -1,10 +1,9 @@
-import random
 from re import split
 
 from .pacman import *
 
 
-class level:
+class Level:
     def __init__(self, randomized=False):
         self.lvlWidth = 0
         self.lvlHeight = 0
@@ -183,7 +182,7 @@ class level:
 
         return False
 
-    def GetPathwayPairPos(self, tileID, thisLevel):
+    def GetPathwayPairPos(self, tileID, thisLevel, random):
         doorArray = []
 
         for row in range(0, self.lvlHeight, 1):
@@ -198,7 +197,7 @@ class level:
         if len(doorArray) == 0:
             return False
 
-        chosenDoor = random.randint(0, len(doorArray) - 1)
+        chosenDoor = random.randint(0, len(doorArray))  # - 1)
 
         if self.GetMapTile(doorArray[chosenDoor]) == tileID['door-h']:
             # horizontal door was chosen
@@ -271,7 +270,7 @@ class level:
                             row * TILE_HEIGHT - thisGame.screenPixelOffset[1]))
 
     def LoadLevel(self, levelNum, thisFruit, player, ghosts, path,
-                  thisGame, tileID, tileIDName):
+                  thisGame, tileID, tileIDName, random):
         levelNum = str(levelNum)
         # TODO: Find better way to mitigate IO bottleneck.
         if levelNum in self.preload_width:
@@ -298,7 +297,8 @@ class level:
                     else:
                         path.SetType((row, col), 0)
             # do all the level-starting stuff
-            self.Restart(thisGame, player, ghosts, tileID, path, thisFruit)
+            self.Restart(thisGame, player, ghosts, tileID, path, thisFruit,
+                         random)
             return
 
         self.map = {}
@@ -450,9 +450,10 @@ class level:
         self.preload_pellet_color[levelNum] = self.pelletColor
         self.preload_map[levelNum] = self.map.copy()
         self.preload_pellets[levelNum] = self.pellets
-        self.Restart(thisGame, player, ghosts, tileID, path, thisFruit)
+        self.Restart(thisGame, player, ghosts, tileID, path, thisFruit, random)
 
-    def Restart(self, thisGame, player, ghosts, tileID, path, thisFruit):
+    def Restart(self, thisGame, player, ghosts, tileID, path, thisFruit,
+                random):
         # if thisGame.levelNum == 2:
         # player.speed = 4
 
@@ -465,8 +466,8 @@ class level:
                 # while not self.GetMapTile((randRow, randCol)) == tileID[
                 # 'pellet'] or (randRow, randCol) == (0, 0):
                 while True:
-                    randRow = random.randint(1, self.lvlHeight - 2)
-                    randCol = random.randint(1, self.lvlWidth - 2)
+                    randRow = random.randint(1, self.lvlHeight - 1)  # 2)
+                    randCol = random.randint(1, self.lvlWidth - 1)  # 2)
                     tile = self.GetMapTile((randRow, randCol))
                     if tile == tileID["ghost-door"] or \
                             tile == tileID["pellet"] or \
@@ -478,21 +479,21 @@ class level:
             ghosts[i].velY = 0
             ghosts[i].state = 1
             ghosts[i].speed = 2
-            ghosts[i].Move(path, player, self, tileID)
+            ghosts[i].Move(path, player, self, tileID, random)
 
             # give each ghost a path to a random spot (containing a pellet)
             (randRow, randCol) = (0, 0)
 
             while not self.GetMapTile((randRow, randCol)) == tileID[
                 'pellet'] or (randRow, randCol) == (0, 0):
-                randRow = random.randint(1, self.lvlHeight - 2)
-                randCol = random.randint(1, self.lvlWidth - 2)
+                randRow = random.randint(1, self.lvlHeight - 1)  # 2)
+                randCol = random.randint(1, self.lvlWidth - 1)  # 2)
 
             # print "Ghost " + str(i) + " headed towards " + str((randRow, randCol))
             ghosts[i].currentPath = path.FindPath(
                 (ghosts[i].nearestRow, ghosts[i].nearestCol),
                 (randRow, randCol))
-            ghosts[i].FollowNextPathWay(path, player, self, tileID)
+            ghosts[i].FollowNextPathWay(path, player, self, tileID, random)
 
         thisFruit.active = False
 
@@ -505,14 +506,16 @@ class level:
             # while not self.GetMapTile((randRow, randCol)) == tileID[
             # 'pellet'] or (randRow, randCol) == (0, 0):
             while True:
-                randRow = random.randint(1, self.lvlHeight - 2)
-                randCol = random.randint(1, self.lvlWidth - 2)
+                randRow = random.randint(1, self.lvlHeight - 1)  # 2)
+                randCol = random.randint(1, self.lvlWidth - 1)  # 2)
                 tile = self.GetMapTile((randRow, randCol))
                 if tile == tileID["pellet"] or tile == tileID["pellet-power"]:
                     break
             player.x = randCol * TILE_WIDTH
             player.y = randRow * TILE_HEIGHT
 
+        player.nearestRow = int(((player.y + (TILE_WIDTH / 2)) / TILE_WIDTH))
+        player.nearestCol = int(((player.x + (TILE_HEIGHT / 2)) / TILE_HEIGHT))
         player.velX = 0
         player.velY = 0
 

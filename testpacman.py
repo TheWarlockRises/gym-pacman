@@ -3,6 +3,7 @@ from sys import exit
 
 from gym_pacman.envs.pacman_env import PacmanEnv
 from gym_pacman.pacman import *
+from gym_pacman.sensor import sensor_1d_4
 
 pygame.mixer.pre_init(22050, -16, 1, 1024)
 pygame.mixer.init()
@@ -11,8 +12,9 @@ channel_backgound = pygame.mixer.Channel(6)
 clock = pygame.time.Clock()
 pygame.init()
 
-
-pacman = PacmanEnv(invincible=False, randomized=True)
+pacman = PacmanEnv(invincible=False, randomized=True,
+                   sensor=sensor_1d_4(10, offset=True, width=2))
+pacman.reset()
 
 direc = 0
 
@@ -23,16 +25,17 @@ while True:
             exit(0)
     pacman.render()
     observation, _, done, info = pacman.step(direc)
-    clock.tick(40)
-    if random.random() < 0.05:
+    pause = False
+    if pause:
+        print(observation)
+    while pause:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pause = False
+        clock.tick(60)
+    else:
+        clock.tick(40)
+    if random.random() < 0.05 or info["pacmanx"] == 0 and info["pacmany"] == 0:
         direc = random.randint(0, 3)
-    elif info["pacmanx"] == 0 and info["pacmany"] == 0:
-        direc = random.randint(0, 3)
-        possible = []
-        for i in range(4):
-            if observation[1][i] > 0:
-                possible.append(i)
-        if len(possible) > 0:
-            direc = possible[random.randint(0, len(possible) - 1)]
     if done:
         pacman.reset()

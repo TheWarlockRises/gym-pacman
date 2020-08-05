@@ -1,4 +1,3 @@
-import random
 from math import copysign
 
 from .pacman import *
@@ -137,7 +136,7 @@ class Ghost:
 
             self.animDelay = 0
 
-    def Move(self, path, player, thisLevel, tileID):
+    def Move(self, path, player, thisLevel, tileID, random):
         self.x += self.velX
         self.y += self.velY
 
@@ -163,7 +162,7 @@ class Ghost:
             # if self.currentPath is not False and (len(self.currentPath) > 0):
             elif self.currentPath is not False and len(self.currentPath) > 0:
                 self.currentPath = self.currentPath[1:]
-                self.FollowNextPathWay(path, player, thisLevel, tileID)
+                self.FollowNextPathWay(path, player, thisLevel, tileID, random)
 
             else:
                 self.x = self.nearestCol * TILE_WIDTH
@@ -173,9 +172,9 @@ class Ghost:
                 self.currentPath = path.FindPath(
                     (self.nearestRow, self.nearestCol),
                     (player.nearestRow, player.nearestCol))
-                self.FollowNextPathWay(path, player, thisLevel, tileID)
+                self.FollowNextPathWay(path, player, thisLevel, tileID, random)
 
-    def FollowNextPathWay(self, path, player, thisLevel, tileID):
+    def FollowNextPathWay(self, path, player, thisLevel, tileID, random):
         # print "Ghost " + str(self.id) + " rem: " + self.currentPath
         # only follow this pathway if there is a possible path found!
         if not self.currentPath == False:
@@ -200,7 +199,8 @@ class Ghost:
                     # TODO: Fix recursive bug when len of path is 0
                     if self.currentPath is not False and \
                             len(self.currentPath) > 0:
-                        self.FollowNextPathWay(path, player, thisLevel, tileID)
+                        self.FollowNextPathWay(path, player, thisLevel, tileID,
+                                               random)
 
                 else:
                     # glasses found way back to ghost box
@@ -213,9 +213,12 @@ class Ghost:
                     while not thisLevel.GetMapTile((randRow, randCol)) == \
                               tileID['pellet'] or (randRow, randCol) == (
                             0, 0):
-                        randRow = random.randint(1, thisLevel.lvlHeight - 2)
-                        randCol = random.randint(1, thisLevel.lvlWidth - 2)
+                        randRow = random.randint(1,
+                                                 thisLevel.lvlHeight - 1)  # 2)
+                        randCol = random.randint(1,
+                                                 thisLevel.lvlWidth - 1)  # 2)
 
                     self.currentPath = path.FindPath(
                         (self.nearestRow, self.nearestCol), (randRow, randCol))
-                    self.FollowNextPathWay(path, player, thisLevel, tileID)
+                    self.FollowNextPathWay(path, player, thisLevel, tileID,
+                                           random)

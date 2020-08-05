@@ -1,5 +1,4 @@
 from .pacman import *
-import random
 
 
 class Game:
@@ -136,14 +135,19 @@ class Game:
         self.imHiscores = self.makehiscorelist()
 
     def StartNewGame(self, thisLevel, thisGame, thisFruit, player, ghosts,
-                     path, tileID, tileIDName):
-        self.levelNum = random.randrange(0, 11)
+                     path, tileID, tileIDName, random, level):
+        if type(level) is int:
+            self.levelNum = level
+        elif type(level) is list:
+            self.levelNum = random.choice(level)
+        else:
+            self.levelNum = random.randint(0, 13)
         self.score = 0
         self.lives = 3
 
         self.SetMode(1)
         thisLevel.LoadLevel(self.levelNum, thisFruit, player, ghosts,
-                            path, thisGame, tileID, tileIDName)
+                            path, thisGame, tileID, tileIDName, random)
 
     def AddToScore(self, amount, thisGame):
         extraLifeSet = [25000, 50000, 100000, 150000]

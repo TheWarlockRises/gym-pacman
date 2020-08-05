@@ -40,7 +40,7 @@ class Scorer:
 
 
 class BasicScorer(Scorer):
-    def __init__(self, end_score=5000):
+    def __init__(self, end_score=1000000):
         Scorer.__init__(self)
         self.end_score = end_score
         self.ghost_value = 0

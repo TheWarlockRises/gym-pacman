@@ -8,9 +8,6 @@ class Scorer:
     def reset(self):
         self.score = 0
 
-    def get_score(self):
-        return self.score
-
     def score_door_entry(self):
         pass
 
@@ -40,27 +37,33 @@ class Scorer:
 
 
 class BasicScorer(Scorer):
-    def __init__(self, end_score=1000000):
+    def __init__(self, fruit_eat=2500, ghost_eat=200, ghost_hit=-1000000,
+                 level_finished=0, pellet_eat=10, power_pellet_eat=50):
         Scorer.__init__(self)
-        self.end_score = end_score
-        self.ghost_value = 0
+        self.fruit_eat = fruit_eat
+        self.ghost_hit = ghost_hit
+        self.ghost_eat = ghost_eat
+        self.ghost_value = ghost_eat
+        self.level_finished = level_finished
+        self.pellet_eat = pellet_eat
+        self.power_pellet_eat = power_pellet_eat
 
     def score_fruit_eat(self):
-        self.score += 2500
+        self.score += self.fruit_eat
 
     def score_ghost_eat(self):
         self.score += self.ghost_value
         self.ghost_value *= 2
 
     def score_ghost_hit(self):
-        self.score -= self.end_score
+        self.score += self.ghost_hit
 
     def score_pellet_eat(self):
-        self.score += 10
+        self.score += self.pellet_eat
 
     def score_power_pellet_eat(self):
-        self.score += 100
-        self.ghost_value = 200
+        self.score += self.power_pellet_eat
+        self.ghost_value = self.ghost_eat
 
     def score_level_finished(self):
-        self.score += self.end_score
+        self.score += self.level_finished

@@ -130,7 +130,7 @@ class PacmanEnv(gym.Env):
             self.thisGame.mode = 1
         done = self.thisGame.mode == 2 or self.thisGame.mode == 6
         # TODO: Return number of frames to pause for sound FX
-        return observation, self.scorer.get_score(), done, {
+        return observation, self.scorer.score, done, {
             "action": self.action, "pacmanx": self.player.velX,
             "pacmany": self.player.velY}
 

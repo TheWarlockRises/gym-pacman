@@ -136,7 +136,8 @@ class Level:
                         thisLevel.SetMapTile((iRow, iCol), 0)
                         # snd_powerpellet.play()
 
-                        thisGame.AddToScore(100, thisGame)
+                        # thisGame.AddToScore(100, thisGame)
+                        thisGame.AddToScore(50, thisGame)
                         scorer.score_power_pellet_eat()
                         thisGame.ghostValue = 200
 

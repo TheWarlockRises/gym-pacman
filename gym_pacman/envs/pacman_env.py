@@ -31,21 +31,39 @@ from ..sensor import *
 class PacmanEnv(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, invincible=False, level=None, randomized=False,
-                 scorer=BasicScorer(), sensor=sensor_1d_4(10), sound=False):
+    def __init__(self, invincible=False, level=None, phantom_turn=False,
+                 randomized=False, scorer=BasicScorer(), sensor=sensor_2d(5),
+                 sound=False):
+        """
+        Placeholder description.
+
+        :param invincible: Environment will only mark itself done when all
+            pellets are collected.
+        :param level: Specify a level or list of levels to choose from
+            randomly.
+        :param phantom_turn: Read rotated sensor data based on last action
+            chosen instead of current velocity.
+        :param randomized: Make Pac-Man and the ghosts start on a random tile
+            at the start of a level.
+        :param scorer: Specify the Scorer object used for environment scoring.
+        :param sensor: Specify the sensor function used for observation.
+        :param sound: Dummy parameter. Toggle pygame sound effects.
+        """
         # OpenAI Variables
         self.action = 2
         self.action_space = Discrete(4)
         self.observation_space = Box(-1, 5, shape=sensor(None).shape,
                                      dtype=int)
+        self.phantom_turn = phantom_turn
         self.random, _ = np_random(None)
+        self.randomized = randomized
+        self.scorer = scorer
+        self.sensor = sensor
 
         # Pac-Man Variables
         self.gui = False
         self.invincible = invincible
         self.level = level
-        self.scorer = scorer
-        self.sensor = sensor
         self.sound = sound
 
         # create the pacman
@@ -87,6 +105,7 @@ class PacmanEnv(gym.Env):
         return [seed]
 
     def check_inputs(self, action):
+        last_action = self.action
         self.action = action
         if action == 0 and not self.thisLevel.CheckIfHitWall(
                 (self.player.x + self.player.speed, self.player.y),
@@ -108,6 +127,8 @@ class PacmanEnv(gym.Env):
                 (self.player.nearestRow, self.player.nearestCol)):
             self.player.velX = 0
             self.player.velY = self.player.speed
+        elif not self.phantom_turn:
+            self.action = last_action
 
     def step(self, action):
         # Use action param to control player.
@@ -140,7 +161,8 @@ class PacmanEnv(gym.Env):
         # the static method CheckIfHitSomething() in lines 108-111 of level.py
         # regards obtaining all pellets
         self.thisLevel.gui = False  # Get renderer to call crossref again.
-        self.action = 2  # Reset observation direction.
+        # self.action = 2  # Reset observation direction.
+        self.action = self.random.randint(0, 4) if self.randomized else 2
         self.thisGame.StartNewGame(self.thisLevel, self.thisGame,
                                    self.thisFruit, self.player, self.ghosts,
                                    self.path, self.tileID, self.tileIDName,

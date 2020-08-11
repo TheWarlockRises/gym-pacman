@@ -37,7 +37,7 @@ class Scorer:
 
 
 class BasicScorer(Scorer):
-    def __init__(self, fruit_eat=2500, ghost_eat=200, ghost_hit=-1000000,
+    def __init__(self, fruit_eat=2500, ghost_eat=200, ghost_hit=0,
                  level_finished=0, pellet_eat=10, power_pellet_eat=50):
         Scorer.__init__(self)
         self.fruit_eat = fruit_eat

@@ -81,7 +81,7 @@ def sensor_1d_1(sensor_range, block=False, door_skip=False, offset=False,
                     vision[r][w] = 4
                 elif env.thisFruit.active and fx == px and fy == py:
                     vision[r][w] = 5
-                elif tile == 0:
+                elif tile == 0 and px != 0 and py != 0:
                     vision[r][w] = 1
                 elif tile == pel:
                     vision[r][w] = 2
@@ -158,7 +158,7 @@ def sensor_1d_2(sensor_range, block=False, door_skip=False, offset=False,
                         vision[r][d_index] = 4
                     elif env.thisFruit.active and fx == px and fy == py:
                         vision[r][d_index] = 5
-                    elif tile == 0:
+                    elif tile == 0 and px != 0 and py != 0:
                         vision[r][d_index] = 1
                     elif tile == pel:
                         vision[r][d_index] = 2
@@ -236,7 +236,7 @@ def sensor_1d_4(sensor_range, block=False, door_skip=False, offset=False,
                         vision[r][d_index] = 4
                     elif env.thisFruit.active and fx == px and fy == py:
                         vision[r][d_index] = 5
-                    elif tile == 0:
+                    elif tile == 0 and px != 0 and py != 0:
                         vision[r][d_index] = 1
                     elif tile == pel:
                         vision[r][d_index] = 2
@@ -292,21 +292,21 @@ def sensor_2d(sensor_range, block=False, door_skip=False, offset=False,
             return vision
         door_h, door_v, pel, p_pel, fx, fy, gxy, vxy, lvl_height, lvl_width = \
             get_tile_info(env, door_skip)
-        door_x = 0
+        # door_x = 0
         for x in range(-sensor_range, sensor_range + 1):
-            px = x + env.player.nearestCol + door_x
+            px = x + env.player.nearestCol  # + door_x
             # Skip recording tiles if out of bounds and map tiling = false.
             if not tile_map and (px < 0 or px >= env.thisLevel.lvlWidth):
                 continue
-            px %= env.thisLevel.lvlWidth
+            px %= lvl_width
             x += view
-            door_y = 0
+            # door_y = 0
             for y in range(-sensor_range, sensor_range + 1):
-                py = y + env.player.nearestRow + door_y
+                py = y + env.player.nearestRow  # + door_y
                 # Skip recording tiles if out of bounds and map tiling = false.
                 if not tile_map and (py < 0 or py >= env.thisLevel.lvlHeight):
                     continue
-                py %= env.thisLevel.lvlHeight
+                py %= lvl_height
                 tile = env.thisLevel.GetMapTile((py, px))
                 y += view
                 if any(px == g[0] and py == g[1] for g in gxy):
@@ -315,12 +315,15 @@ def sensor_2d(sensor_range, block=False, door_skip=False, offset=False,
                     vision[x][y] = 4
                 elif env.thisFruit.active and fx == px and fy == py:
                     vision[x][y] = 5
-                elif tile == 0:
+                elif tile == 0 and px != 0 and py != 0:
                     vision[x][y] = 1
                 elif tile == pel:
                     vision[x][y] = 2
                 elif tile == p_pel:
                     vision[x][y] = 3
+                elif tile == door_h or tile == door_v:
+                    vision[x][y] = 1
+                """
                 elif tile == door_h:
                     if door_skip and px > 0:
                         door_x += 1
@@ -329,6 +332,7 @@ def sensor_2d(sensor_range, block=False, door_skip=False, offset=False,
                     if door_skip and py > 0:
                         door_y += 1
                     vision[x][y] = 1
+                """
         if rotate:
             vision = rot90(vision, k=env.action)
         return vision
